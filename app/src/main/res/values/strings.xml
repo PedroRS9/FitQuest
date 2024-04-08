@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">FitQuest</string>
+    <string name="welcome_message">Welcome to FitQuest\n</string>
+</resources>

@@ -4,15 +4,23 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Person
@@ -42,7 +50,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -50,6 +60,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -314,5 +325,50 @@ fun FitquestLabelledCheckbox(
             colors = colors
         )
         Text(label, color = labelColor)
+    }
+}
+
+@Composable
+fun FitquestProfilePicture(
+    userProfileImage: Painter = painterResource(id = R.drawable.default_profile_pic),
+    isChangeable: Boolean = false,
+    onUploadImageClick: () -> Unit = {},
+    onClick: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    val imageModifier = Modifier
+        .size(150.dp)
+        .clip(CircleShape)
+        .border(2.dp, Color.Gray, CircleShape)
+        .clickable { onClick() }
+    val iconSize = 22.dp
+    val offsetInPx = LocalDensity.current.run { (iconSize / 2).roundToPx() }
+
+    Box(modifier = modifier) {
+        Image(
+            painter = userProfileImage,
+            contentDescription = "Imagen de perfil",
+            modifier = imageModifier
+        )
+        if(isChangeable){
+            IconButton(
+                onClick = onUploadImageClick,
+                modifier = Modifier
+                    .size(35.dp)
+                    .offset {
+                        IntOffset(x = +offsetInPx - 20, y = +offsetInPx - 20)
+                    }
+                    .clip(CircleShape)
+                    .background(Color.Black)
+                    .size(iconSize)
+                    .align(Alignment.BottomEnd)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.CameraAlt,
+                    contentDescription = "Subir foto de perfil",
+                    tint = Color.White
+                )
+            }
+        }
     }
 }

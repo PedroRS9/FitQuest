@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import es.ulpgc.pigs.fitquest.global.UserGlobalConf
 import es.ulpgc.pigs.fitquest.screens.loginscreen.LoginScreen
+import es.ulpgc.pigs.fitquest.screens.signup.SignupScreen
 import es.ulpgc.pigs.fitquest.screens.welcomemenu.WelcomeScreen
 
 @Composable
@@ -19,9 +20,9 @@ fun AppNavigation() {
         composable(route = AppScreens.LoginScreen.route){ backStackEntry ->
             LoginScreen(navController, backStackEntry, userGlobalConf)
         }
-        /*composable(route = AppScreens.SignupScreen.route){ backStackEntry ->
+        composable(route = AppScreens.SignupScreen.route){ backStackEntry ->
             SignupScreen(navController, backStackEntry)
-        }
+        }/*
         composable(route = AppScreens.MainMenuScreen.route){ backStackEntry ->
             MainMenuScreen(navController, backStackEntry, userGlobalConf)
         }

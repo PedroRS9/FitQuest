@@ -33,6 +33,7 @@ import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -371,4 +372,17 @@ fun FitquestProfilePicture(
             }
         }
     }
+}
+
+@Composable
+fun ExperienceBar(
+    xpPercentage: Float
+) {
+    LinearProgressIndicator(
+        modifier = Modifier
+            .height(25.dp),
+        color = Color(0xFF5EBCF0),
+        trackColor = Color.White,
+        progress = xpPercentage
+    )
 }

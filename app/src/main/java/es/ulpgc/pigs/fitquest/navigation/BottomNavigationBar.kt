@@ -13,14 +13,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import es.ulpgc.pigs.fitquest.ui.theme.DarkViolet
+import es.ulpgc.pigs.fitquest.ui.theme.DarkGreen
 import es.ulpgc.pigs.fitquest.ui.theme.LightViolet
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     NavigationBar(
-        // el color de fondo será violeta oscuro
-        containerColor = DarkViolet,
+        containerColor = DarkGreen,
         contentColor = LightViolet,
         modifier = Modifier.height(65.dp)
     ){

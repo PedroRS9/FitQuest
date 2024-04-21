@@ -1,4 +1,18 @@
 <resources>
     <string name="app_name">FitQuest</string>
     <string name="welcome_message">Welcome to FitQuest\n</string>
+    <string name="fitquest_logo_description">Logo of the app FitQuest</string>
+    <string name="button_signin">Login</string>
+    <string name="button_signup">Sign up</string>
+    <string name="url_facebook">https://www.facebook.com</string>
+    <string name="url_twitter">https://www.x.com</string>
+    <string name="url_instagram">https://www.instagram.com</string>
+    <string name="package_facebook">com.facebook.katana</string>
+    <string name="package_twitter">com.twitter.android</string>
+    <string name="package_instagram">com.instagram.android</string>
+    <string name="alertdialog_confirmbutton">OK</string>
+    <string name="type_user_email">Type your username</string>
+    <string name="type_password">Type your password</string>
+    <string name="forgot_password_text">Did you forget your password?</string>
+    <string name="no_acc_text">You don\'t have an account?</string>
 </resources>

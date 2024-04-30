@@ -2,6 +2,7 @@ package es.ulpgc.pigs.fitquest.screens.search
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -26,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,19 +41,22 @@ import es.ulpgc.pigs.fitquest.components.FitquestProfilePicture
 import es.ulpgc.pigs.fitquest.data.SearchResult
 import es.ulpgc.pigs.fitquest.extensions.fitquestBackground
 import es.ulpgc.pigs.fitquest.navigation.BottomNavigationBar
+import es.ulpgc.pigs.fitquest.navigation.TopNavigationBar
 
+@ExperimentalMaterial3Api
 @Composable
 fun SearchScreen(navController: NavController, backStackEntry: NavBackStackEntry){
     val viewModel: SearchViewModel = viewModel(backStackEntry)
     val searchStateObserver by viewModel.searchState.observeAsState()
     Scaffold(
+        topBar = { TopNavigationBar(navController = navController, title = stringResource(R.string.topbar_search_title))},
         bottomBar = { BottomNavigationBar(navController) }
     ) { paddingValues ->
-        paddingValues /* TODO: Remove this line. paddingValues should be passed as a parameter */
         SearchBodyContent(
             navController = navController,
             onSearch = { query -> viewModel.onSearch(query) },
-            searchState = searchStateObserver
+            searchState = searchStateObserver,
+            paddingValues = paddingValues
         )
     }
 }
@@ -61,7 +66,8 @@ fun SearchScreen(navController: NavController, backStackEntry: NavBackStackEntry
 fun SearchBodyContent(
     navController: NavController,
     onSearch: (String) -> Unit,
-    searchState: SearchResult? = null
+    searchState: SearchResult? = null,
+    paddingValues: PaddingValues
 ){
     Column(
         modifier = Modifier.fitquestBackground(),
@@ -145,5 +151,5 @@ fun SearchBodyContent(
 @Preview
 @Composable
 fun SearchScreenPreview() {
-    SearchBodyContent(navController = NavController(LocalContext.current), onSearch = {})
+    SearchBodyContent(navController = NavController(LocalContext.current), onSearch = {}, paddingValues = PaddingValues(0.dp))
 }

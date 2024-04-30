@@ -1,23 +1,27 @@
 package es.ulpgc.pigs.fitquest.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Article
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Store
 import androidx.compose.ui.graphics.vector.ImageVector
 
-//initializing the data class with default parameters
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
     object Home : BottomNavItem(AppScreens.MainMenuScreen.route, Icons.Default.Home, "Home")
-    object Search : BottomNavItem(AppScreens.SearchScreen.route, Icons.Default.Search, "Search")
+    object GetFit : BottomNavItem(AppScreens.GetFitScreen.route, Icons.Default.Article, "Get Fit")
+    object Groups : BottomNavItem(AppScreens.GroupsScreen.route, Icons.Default.Group, "Groups")
+    object Shop : BottomNavItem(AppScreens.ShopScreen.route, Icons.Default.Store, "Shop")
     object Profile : BottomNavItem(AppScreens.ProfileScreen.route, Icons.Default.Person, "Profile")
 }
 
 fun getBottomNavItems(): List<BottomNavItem>{
-    // we add each BottomNavItem to the list in a single line
     val bottomNavItems = listOf(
         BottomNavItem.Home,
-        BottomNavItem.Search,
+        BottomNavItem.GetFit,
+        BottomNavItem.Groups,
+        BottomNavItem.Shop,
         BottomNavItem.Profile
     )
     return bottomNavItems

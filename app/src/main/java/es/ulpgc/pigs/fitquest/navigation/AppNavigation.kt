@@ -1,5 +1,6 @@
 package es.ulpgc.pigs.fitquest.navigation
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,6 +13,7 @@ import es.ulpgc.pigs.fitquest.screens.search.SearchScreen
 import es.ulpgc.pigs.fitquest.screens.signup.SignupScreen
 import es.ulpgc.pigs.fitquest.screens.welcomemenu.WelcomeScreen
 
+@ExperimentalMaterial3Api
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()

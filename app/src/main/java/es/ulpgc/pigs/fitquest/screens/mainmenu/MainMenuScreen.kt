@@ -2,9 +2,11 @@ package es.ulpgc.pigs.fitquest.screens.mainmenu
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -21,9 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
@@ -40,8 +42,10 @@ import es.ulpgc.pigs.fitquest.extensions.fitquestBackground
 import es.ulpgc.pigs.fitquest.global.UserGlobalConf
 import es.ulpgc.pigs.fitquest.navigation.AppScreens
 import es.ulpgc.pigs.fitquest.navigation.BottomNavigationBar
+import es.ulpgc.pigs.fitquest.navigation.TopNavigationBar
 import es.ulpgc.pigs.fitquest.ui.theme.FitquestTheme
 
+@ExperimentalMaterial3Api
 @Composable
 fun MainMenuScreen(navController: NavController, backStackEntry: NavBackStackEntry, userGlobalConf: UserGlobalConf) {
     val user by userGlobalConf.currentUser.observeAsState()
@@ -59,13 +63,14 @@ fun MainMenuScreen(navController: NavController, backStackEntry: NavBackStackEnt
         ConfirmLogoutDialog(showDialog = showDialog, navController)
     }
     Scaffold(
+        topBar = { TopNavigationBar(navController = navController, title = stringResource(R.string.topbar_mainmenu_title)) },
         bottomBar = { BottomNavigationBar(navController) }
     ) { paddingValues ->
-        paddingValues /* TODO: Remove this line. paddingValues should be passed as a parameter */
         BodyContent(
             navController = navController,
             user = user,
-            imageState = imageState
+            imageState = imageState,
+            paddingValues = paddingValues
         )
     }
 }
@@ -74,7 +79,8 @@ fun MainMenuScreen(navController: NavController, backStackEntry: NavBackStackEnt
 fun BodyContent(
     navController: NavController,
     user: User?,
-    imageState: Result?
+    imageState: Result?,
+    paddingValues: PaddingValues
 ) {
     val painter = when (imageState) {
         is Result.ImageSuccess -> rememberAsyncImagePainter(imageState.bytes)
@@ -87,7 +93,7 @@ fun BodyContent(
         modifier = Modifier
             .fillMaxSize()
             .fitquestBackground()
-            .padding(top = 16.dp),
+            .padding(paddingValues),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -153,6 +159,7 @@ fun ConfirmLogoutDialog(showDialog: MutableState<Boolean>, navController: NavCon
 
 
 @Preview
+@ExperimentalMaterial3Api
 @Composable
 fun ShowPreview() {
     FitquestTheme {
@@ -160,11 +167,17 @@ fun ShowPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            BodyContent(
-                navController = rememberNavController(),
-                user = null,
-                imageState = null
-            )
+            Scaffold(
+                topBar = { TopNavigationBar(navController = rememberNavController(), title = stringResource(R.string.topbar_mainmenu_title)) },
+                bottomBar = { BottomNavigationBar(rememberNavController()) }
+            ) { paddingValues ->
+                BodyContent(
+                    navController = rememberNavController(),
+                    user = null,
+                    imageState = null,
+                    paddingValues = paddingValues
+                )
+            }
         }
     }
 }

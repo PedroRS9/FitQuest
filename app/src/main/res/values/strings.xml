@@ -22,4 +22,7 @@
     <string name="password_invalid_error">Password must be at least 6 characters long.</string>
     <string name="accept_tos">Accept ToS</string>
     <string name="tos_notaccepted_error">You must accept ToS.</string>
+    <string name="topbar_profile_title">Profile</string>
+    <string name="topbar_search_title">Search user</string>
+    <string name="topbar_mainmenu_title">Main Menu</string>
 </resources>

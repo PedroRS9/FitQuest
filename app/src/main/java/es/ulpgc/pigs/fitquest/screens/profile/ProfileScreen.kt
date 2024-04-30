@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -33,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,9 +53,11 @@ import es.ulpgc.pigs.fitquest.components.ErrorDialog
 import es.ulpgc.pigs.fitquest.components.ExperienceBar
 import es.ulpgc.pigs.fitquest.data.Result
 import es.ulpgc.pigs.fitquest.navigation.BottomNavigationBar
+import es.ulpgc.pigs.fitquest.navigation.TopNavigationBar
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
+@ExperimentalMaterial3Api
 @Composable
 fun ProfileScreen(navController: NavController, backStackEntry: NavBackStackEntry, userGlobalConf: UserGlobalConf){
     val user by userGlobalConf.currentUser.observeAsState()
@@ -64,9 +69,9 @@ fun ProfileScreen(navController: NavController, backStackEntry: NavBackStackEntr
     val imageState by viewModel.imageState.observeAsState()
     val updateState by viewModel.updateState.observeAsState()
     Scaffold(
+        topBar = { TopNavigationBar(navController, title = stringResource(R.string.topbar_profile_title)) },
         bottomBar = { BottomNavigationBar(navController) }
     ) { paddingValues ->
-        paddingValues /* TODO: Remove this line. paddingValues should be passed as a parameter */
         BodyContent(
             user = user ?: User("Error", "", ""),
             uploadImage = { filename: String, byteArray: ByteArray, us: User ->
@@ -74,7 +79,8 @@ fun ProfileScreen(navController: NavController, backStackEntry: NavBackStackEntr
             },
             clearViewModel = { viewModel.clearError()},
             imageState = imageState,
-            updateState = updateState
+            updateState = updateState,
+            paddingValues = paddingValues
         )
     }
 }
@@ -85,7 +91,8 @@ fun BodyContent(
     uploadImage: (String, ByteArray, User) -> Unit,
     clearViewModel: () -> Unit,
     imageState: Result?,
-    updateState: Result?
+    updateState: Result?,
+    paddingValues: PaddingValues
 ){
     val painter = when (imageState) {
         is Result.ImageSuccess -> { rememberAsyncImagePainter(imageState.bytes) }
@@ -95,7 +102,7 @@ fun BodyContent(
     var errorMessage by remember { mutableStateOf("") }
     val context = LocalContext.current
     Column(
-        modifier = Modifier.fitquestBackground(),
+        modifier = Modifier.fitquestBackground().padding(paddingValues),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         val launcher = rememberLauncherForActivityResult(
@@ -186,7 +193,8 @@ fun ShowPreview(){
                 imageState = null,
                 updateState = null,
                 clearViewModel = {},
-                uploadImage = { _, _, _ -> }
+                uploadImage = { _, _, _ -> },
+                paddingValues = PaddingValues(0.dp, 0.dp, 0.dp, 0.dp)
             )
         }
     }

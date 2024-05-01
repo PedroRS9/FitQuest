@@ -17,6 +17,7 @@
 .cxx
 local.properties
 app/google-services.json
+*/google-services.json
 firebase-debug.log
 firebase-debug.*.log
 /.idea/deploymentTargetDropDown.xml

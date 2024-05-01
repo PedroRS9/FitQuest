@@ -6,6 +6,7 @@ class User(
     private val name: String,
     private val password: String,
     private val email: String,
+    private val isDoctor: Boolean,
     private var pictureURL: String? = null,
     // we show the default picture R.drawable.default_profile_pic if the user has not uploaded one
     private var picture: ByteArray? = null,
@@ -50,6 +51,10 @@ class User(
         return picture != null
     }
 
+    fun isDoctor(): Boolean{
+        return isDoctor
+    }
+
 
     /**
      * Añade experiencia al usuario y devuelve si ha subido de nivel.
@@ -67,7 +72,7 @@ class User(
     }
 
     fun copy(): User {
-        return User(name, password, email, pictureURL, picture, level, xp)
+        return User(name, password, email, isDoctor, pictureURL, picture, level, xp)
     }
 
 }

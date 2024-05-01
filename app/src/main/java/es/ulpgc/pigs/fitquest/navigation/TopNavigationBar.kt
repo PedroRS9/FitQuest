@@ -36,7 +36,7 @@ fun TopNavigationBar(navController: NavController, title: String) {
             IconButton(onClick = { navController.navigate(AppScreens.SearchScreen.route) }) {
                 Icon(Icons.Filled.Search, contentDescription = "Search Profile", tint = Color.White)
             }
-            IconButton(onClick = { navController.navigate(AppScreens.ChatScreen.route) }){
+            IconButton(onClick = { navController.navigate(AppScreens.ChatListScreen.route) }){
                 Icon(Icons.Filled.Chat, contentDescription = "Chat", tint = Color.White)
             }
         }

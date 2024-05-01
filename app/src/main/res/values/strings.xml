@@ -25,4 +25,5 @@
     <string name="topbar_profile_title">Profile</string>
     <string name="topbar_search_title">Search user</string>
     <string name="topbar_mainmenu_title">Main Menu</string>
+    <string name="topbar_chat_title">Chat</string>
 </resources>

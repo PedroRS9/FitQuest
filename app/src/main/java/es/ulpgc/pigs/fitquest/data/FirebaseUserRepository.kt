@@ -18,6 +18,7 @@ class FirebaseUserRepository : UserRepository {
                     val userMap = hashMapOf(
                         "username" to user.getName(),
                         "email" to user.getEmail(),
+                        "isDoctor" to user.isDoctor(),
                         "pictureURL" to null,
                         "level" to 1,
                         "xp" to 0
@@ -51,6 +52,7 @@ class FirebaseUserRepository : UserRepository {
                     name = document.getString("username") ?: "",
                     password = "", // we don't store passwords on Firestore
                     email = document.getString("email") ?: "",
+                    isDoctor = document.getBoolean("isDoctor") ?: false,
                     pictureURL = document.getString("pictureURL"),
                     level = document.getLong("level")?.toInt() ?: 1,
                     xp = document.getLong("xp")?.toInt() ?: 0
@@ -70,6 +72,7 @@ class FirebaseUserRepository : UserRepository {
                     name = document.getString("username") ?: "",
                     password = "", // passwords aren't stored on Firestore
                     email = document.getString("email") ?: "",
+                    isDoctor = document.getBoolean("isDoctor") ?: false,
                     pictureURL = document.getString("pictureURL"),
                     level = document.getLong("level")?.toInt() ?: 1,
                     xp = document.getLong("xp")?.toInt() ?: 0
@@ -112,6 +115,7 @@ class FirebaseUserRepository : UserRepository {
                     name = document.getString("username") ?: "",
                     password = "", // we don't store passwords in firestore
                     email = document.getString("email") ?: "",
+                    isDoctor = document.getBoolean("isDoctor") ?: false,
                     pictureURL = document.getString("pictureURL"),
                     level = document.getLong("level")?.toInt() ?: 1,
                     xp = document.getLong("xp")?.toInt() ?: 0
@@ -120,6 +124,23 @@ class FirebaseUserRepository : UserRepository {
             callback(SearchResult.ShowResults(users))
         }.addOnFailureListener {
             callback(SearchResult.ShowError(it))
+        }
+    }
+
+    override fun getAllDoctors(callback: (List<User>) -> Unit) {
+        database.collection("users").whereEqualTo("isDoctor", true).get().addOnSuccessListener { documents ->
+            val doctors = documents.map { document ->
+                User(
+                    name = document.getString("username") ?: "",
+                    password = "", // we don't store passwords in firestore
+                    email = document.getString("email") ?: "",
+                    isDoctor = document.getBoolean("isDoctor") ?: false,
+                    pictureURL = document.getString("pictureURL"),
+                    level = document.getLong("level")?.toInt() ?: 1,
+                    xp = document.getLong("xp")?.toInt() ?: 0
+                )
+            }
+            callback(doctors)
         }
     }
 

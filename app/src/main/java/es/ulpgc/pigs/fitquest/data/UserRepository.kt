@@ -6,4 +6,5 @@ interface UserRepository {
     fun findUserByEmail(email: String, callback: (User?) -> Unit)
     fun updateUser(user: User, callback: (Result) -> Unit)
     fun searchUsers(query: String, callback: (SearchResult) -> Unit)
+    fun getAllDoctors(callback: (List<User>) -> Unit)
 }

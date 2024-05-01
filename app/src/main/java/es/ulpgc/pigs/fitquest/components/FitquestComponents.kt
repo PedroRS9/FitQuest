@@ -10,7 +10,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -24,6 +26,7 @@ import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
@@ -40,6 +43,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -60,12 +64,14 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.ulpgc.pigs.fitquest.R
+import es.ulpgc.pigs.fitquest.data.Message
 import es.ulpgc.pigs.fitquest.ui.theme.DarkGreen
 
 @Composable
@@ -385,4 +391,59 @@ fun ExperienceBar(
         trackColor = Color.White,
         progress = xpPercentage
     )
+}
+
+@Composable
+fun MessageBubble(message: Message, itsMyMessage: Boolean, modifier: Modifier = Modifier){
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(4.dp)){
+        Box(
+            modifier = Modifier
+                .align(if (itsMyMessage) Alignment.End else Alignment.Start)
+                .clip(
+                    RoundedCornerShape(
+                        topStart = 48f,
+                        topEnd = 48f,
+                        bottomStart = if (itsMyMessage) 48f else 0f,
+                        bottomEnd = if (itsMyMessage) 0f else 48f
+                    )
+                )
+                .background(DarkGreen)
+                .padding(16.dp)
+                .composed { modifier }
+        ) {
+            Text(text = message.content, color=Color.White, fontSize = 16.sp)
+        }
+    }
+
+}
+
+@Composable
+fun ChatBox(onSend: (String) -> Unit, modifier: Modifier) {
+    var chatBoxValue by remember { mutableStateOf(TextFieldValue("")) }
+    Row(modifier = modifier.padding(16.dp)) {
+        TextField(
+            value = chatBoxValue,
+            onValueChange = { newText ->
+                chatBoxValue = newText
+            },
+            placeholder = {
+                Text(text = "Type something")
+            }
+        )
+        IconButton(onClick = { onSend(chatBoxValue.text) },
+            modifier = Modifier
+                        .clip(CircleShape)
+                        .background(color = DarkGreen)
+                        .align(Alignment.CenterVertically)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Send,
+                contentDescription = "Send",
+                tint = Color.White,
+                modifier = Modifier.fillMaxSize().padding(8.dp)
+            )
+        }
+    }
 }

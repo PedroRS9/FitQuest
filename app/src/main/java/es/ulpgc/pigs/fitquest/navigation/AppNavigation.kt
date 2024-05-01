@@ -2,10 +2,14 @@ package es.ulpgc.pigs.fitquest.navigation
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import es.ulpgc.pigs.fitquest.global.UserGlobalConf
+import es.ulpgc.pigs.fitquest.screens.chatscreen.ChatListScreen
+import es.ulpgc.pigs.fitquest.screens.chatscreen.ChatScreen
 import es.ulpgc.pigs.fitquest.screens.loginscreen.LoginScreen
 import es.ulpgc.pigs.fitquest.screens.mainmenu.MainMenuScreen
 import es.ulpgc.pigs.fitquest.screens.profile.ProfileScreen
@@ -36,6 +40,15 @@ fun AppNavigation() {
         }
         composable(route = AppScreens.ProfileScreen.route){ backStackEntry ->
             ProfileScreen(navController, backStackEntry, userGlobalConf)
+        }
+        composable(route = AppScreens.ChatListScreen.route){ backStackEntry ->
+            ChatListScreen(navController, backStackEntry, userGlobalConf)
+        }
+        composable(route = AppScreens.ChatScreen.route,
+            arguments = listOf(navArgument("username") { type = NavType.StringType })
+        ){ backStackEntry ->
+            val username = backStackEntry.arguments?.getString("username")
+            ChatScreen(navController, backStackEntry, userGlobalConf, username)
         }
     }
 }

@@ -13,7 +13,7 @@ class SignupViewModel : ViewModel() {
     private val _signupState = MutableLiveData<Result>()
     val signupState: LiveData<Result> = _signupState
     fun onSignup(username: String, email: String, password: String) {
-        val user = User(name = username, email = email, password = password)
+        val user = User(name = username, email = email, password = password, isDoctor = false)
         _signupState.value = Result.Loading
         userRepository.createUser(user){ result: Result ->
             _signupState.value = result

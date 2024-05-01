@@ -73,7 +73,7 @@ fun ProfileScreen(navController: NavController, backStackEntry: NavBackStackEntr
         bottomBar = { BottomNavigationBar(navController) }
     ) { paddingValues ->
         BodyContent(
-            user = user ?: User("Error", "", ""),
+            user = user ?: User("Error", "", "", isDoctor=false),
             uploadImage = { filename: String, byteArray: ByteArray, us: User ->
                 viewModel.onChooseImage(filename, byteArray, us)
             },
@@ -189,7 +189,7 @@ fun ShowPreview(){
             color = MaterialTheme.colorScheme.background
         ) {
             BodyContent(
-                user = User("PedroRS9", "", "", null, null,1, 50),
+                user = User("PedroRS9", "", "", false, null, null,1, 50),
                 imageState = null,
                 updateState = null,
                 clearViewModel = {},

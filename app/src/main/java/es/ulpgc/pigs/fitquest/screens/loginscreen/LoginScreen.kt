@@ -38,7 +38,7 @@ import es.ulpgc.pigs.fitquest.components.FitquestButton
 import es.ulpgc.pigs.fitquest.components.FitquestClickableText
 import es.ulpgc.pigs.fitquest.components.FitquestTextField
 import es.ulpgc.pigs.fitquest.data.Result
-import es.ulpgc.pigs.fitquest.extensions.fitquestBackground
+import es.ulpgc.pigs.fitquest.extensions.fitquestLoginBackground
 import es.ulpgc.pigs.fitquest.global.UserGlobalConf
 import es.ulpgc.pigs.fitquest.navigation.AppScreens
 import es.ulpgc.pigs.fitquest.ui.theme.FitquestTheme
@@ -75,7 +75,7 @@ fun BodyContent(navController: NavController,
     val focusManager = LocalFocusManager.current
 
     Column(
-        modifier = Modifier.fitquestBackground().pointerInput(Unit){
+        modifier = Modifier.fitquestLoginBackground().pointerInput(Unit){
             detectTapGestures(onTap = {
                 focusManager.clearFocus() // Clear focus when user taps outside of a TextField
             })

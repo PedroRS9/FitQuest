@@ -39,7 +39,7 @@ import es.ulpgc.pigs.fitquest.ui.theme.FitquestTheme
 import es.ulpgc.pigs.fitquest.components.FitquestButton
 import es.ulpgc.pigs.fitquest.components.FitquestCheckbox
 import es.ulpgc.pigs.fitquest.components.FitquestTextField
-import es.ulpgc.pigs.fitquest.extensions.fitquestBackground
+import es.ulpgc.pigs.fitquest.extensions.fitquestLoginBackground
 import es.ulpgc.pigs.fitquest.navigation.AppScreens
 
 @Composable
@@ -76,7 +76,7 @@ fun BodyContent(navController: NavController,
     val context = LocalContext.current
 
     Column(
-        modifier = Modifier.fitquestBackground(),
+        modifier = Modifier.fitquestLoginBackground(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

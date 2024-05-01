@@ -28,6 +28,7 @@ import es.ulpgc.pigs.fitquest.R
 import es.ulpgc.pigs.fitquest.components.FitquestSocialMediaIcons
 import es.ulpgc.pigs.fitquest.components.FitquestTransparentButton
 import es.ulpgc.pigs.fitquest.extensions.fitquestBackground
+import es.ulpgc.pigs.fitquest.extensions.fitquestLoginBackground
 import es.ulpgc.pigs.fitquest.navigation.AppScreens
 import es.ulpgc.pigs.fitquest.ui.theme.FitquestTheme
 
@@ -45,7 +46,7 @@ fun WelcomeScreen(navController: NavController) {
 @Composable
 fun BodyContent(navController: NavController) {
         Column(
-                modifier = Modifier.fitquestBackground(),
+                modifier = Modifier.fitquestLoginBackground(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
         ) {

@@ -12,5 +12,6 @@ val Pink40 = Color(0xFF7D5260)
 
 val DarkGreen = Color(0xFF377D22)
 val SaturatedGreen = Color(0xFF65D642)
+val FitQuestBackground = Color( 0xFFFFFFFF)
 val FitquestGradientTop = Color(0xFF78FF4F)
 val FitquestGradientBottom = Color(0xFF50AB35)

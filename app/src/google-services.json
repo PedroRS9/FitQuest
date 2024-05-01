@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "322654866002",
+    "project_id": "fitquest-pigs",
+    "storage_bucket": "fitquest-pigs.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:322654866002:android:fa283c4a592e81c6836d8b",
+        "android_client_info": {
+          "package_name": "es.ulpgc.pigs.fitquest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5UIAXLFxdVI0DVtIUJFmTFso-RdAFo4s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

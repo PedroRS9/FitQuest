@@ -21,7 +21,8 @@ class FirebaseUserRepository : UserRepository {
                         "isDoctor" to user.isDoctor(),
                         "pictureURL" to null,
                         "level" to 1,
-                        "xp" to 0
+                        "xp" to 0,
+                        "points" to 0
                     )
                     if (firebaseUser != null) {
                         try {
@@ -49,13 +50,15 @@ class FirebaseUserRepository : UserRepository {
             } else {
                 val document = documents.documents[0]
                 val user = User(
+                    id = document.id,
                     name = document.getString("username") ?: "",
                     password = "", // we don't store passwords on Firestore
                     email = document.getString("email") ?: "",
                     isDoctor = document.getBoolean("isDoctor") ?: false,
                     pictureURL = document.getString("pictureURL"),
                     level = document.getLong("level")?.toInt() ?: 1,
-                    xp = document.getLong("xp")?.toInt() ?: 0
+                    xp = document.getLong("xp")?.toInt() ?: 0,
+                    points = document.getLong("points")?.toInt() ?: 0
                 )
                 callback(user)
             }
@@ -69,13 +72,15 @@ class FirebaseUserRepository : UserRepository {
             } else {
                 val document = documents.documents[0]
                 val user = User(
+                    id = document.id,
                     name = document.getString("username") ?: "",
                     password = "", // passwords aren't stored on Firestore
                     email = document.getString("email") ?: "",
                     isDoctor = document.getBoolean("isDoctor") ?: false,
                     pictureURL = document.getString("pictureURL"),
                     level = document.getLong("level")?.toInt() ?: 1,
-                    xp = document.getLong("xp")?.toInt() ?: 0
+                    xp = document.getLong("xp")?.toInt() ?: 0,
+                    points = document.getLong("points")?.toInt() ?: 0
                 )
                 callback(user)
             }
@@ -83,30 +88,25 @@ class FirebaseUserRepository : UserRepository {
     }
 
     override fun updateUser(user: User, callback: (Result) -> Unit) {
-        val firebaseUser = FirebaseAuth.getInstance().currentUser
-        if (firebaseUser != null) {
-            val userMap = hashMapOf(
-                "username" to user.getName(),
-                "email" to user.getEmail(),
-                "pictureURL" to user.getPictureURL(),
-                "level" to user.getLevel(),
-                "xp" to user.getXp()
-            )
-            database.collection("users").document(firebaseUser.uid).update(userMap as Map<String, Any>).addOnCompleteListener {
-                if (it.isSuccessful) {
-                    callback(Result.GeneralSuccess(true))
-                } else {
-                    it.exception?.let { exception ->
-                        callback(Result.Error(exception))
-                    }
+        val userMap = hashMapOf(
+            "username" to user.getName(),
+            "email" to user.getEmail(),
+            "pictureURL" to user.getPictureURL(),
+            "level" to user.getLevel(),
+            "xp" to user.getXp(),
+            "isDoctor" to user.isDoctor(),
+            "points" to user.getPoints()
+        )
+        database.collection("users").document(user.getId()).update(userMap as Map<String, Any>).addOnCompleteListener {
+            if (it.isSuccessful) {
+                callback(Result.GeneralSuccess(true))
+            } else {
+                it.exception?.let { exception ->
+                    callback(Result.Error(exception))
                 }
             }
-        } else {
-            callback(Result.Error(Exception("Error desconocido")))
         }
     }
-
-
 
     override fun searchUsers(query: String, callback: (SearchResult) -> Unit) {
         database.collection("users").whereGreaterThanOrEqualTo("username", query).whereLessThanOrEqualTo("username", query + "\uf8ff").get().addOnSuccessListener { documents ->

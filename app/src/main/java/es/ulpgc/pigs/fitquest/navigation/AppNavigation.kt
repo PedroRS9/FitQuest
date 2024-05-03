@@ -14,6 +14,7 @@ import es.ulpgc.pigs.fitquest.screens.loginscreen.LoginScreen
 import es.ulpgc.pigs.fitquest.screens.mainmenu.MainMenuScreen
 import es.ulpgc.pigs.fitquest.screens.profile.ProfileScreen
 import es.ulpgc.pigs.fitquest.screens.search.SearchScreen
+import es.ulpgc.pigs.fitquest.screens.shopscreen.ShopScreen
 import es.ulpgc.pigs.fitquest.screens.signup.SignupScreen
 import es.ulpgc.pigs.fitquest.screens.welcomemenu.WelcomeScreen
 
@@ -49,6 +50,10 @@ fun AppNavigation() {
         ){ backStackEntry ->
             val username = backStackEntry.arguments?.getString("username")
             ChatScreen(navController, backStackEntry, userGlobalConf, username)
+        }
+        // a composable for the shop screen
+        composable(route = AppScreens.ShopScreen.route){ backStackEntry ->
+            ShopScreen(navController, backStackEntry, userGlobalConf)
         }
     }
 }

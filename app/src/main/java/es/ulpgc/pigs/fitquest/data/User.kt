@@ -3,6 +3,7 @@ package es.ulpgc.pigs.fitquest.data
 import kotlin.math.pow
 
 class User(
+    private val id: String = "",
     private val name: String,
     private val password: String,
     private val email: String,
@@ -11,8 +12,10 @@ class User(
     // we show the default picture R.drawable.default_profile_pic if the user has not uploaded one
     private var picture: ByteArray? = null,
     private var level: Int = 1,
-    private var xp: Int = 0
+    private var xp: Int = 0,
+    private var points: Int = 0
 ) {
+    fun getId() = id
     fun getName() = name
     fun getPassword() = password
     fun getEmail() = email
@@ -28,6 +31,12 @@ class User(
     fun getXp() = xp
     fun setXp(xp: Int) {
         this.xp = xp
+    }
+    fun getPoints(): Int{
+        return points
+    }
+    fun setPoints(points: Int){
+        this.points = points
     }
 
     fun getMinimumXpForCurrentLevel(): Int{
@@ -71,8 +80,10 @@ class User(
         return false
     }
 
+
+
     fun copy(): User {
-        return User(name, password, email, isDoctor, pictureURL, picture, level, xp)
+        return User(id, name, password, email, isDoctor, pictureURL, picture, level, xp)
     }
 
 }

@@ -140,7 +140,7 @@ fun ChatListScreenPreview() {
         ChatListBody(
             navController = navController,
             paddingValues = paddingValues,
-            chatListState = Result.ChatListSuccess(listOf(User("User", "", "", isDoctor=true)))
+            chatListState = Result.ChatListSuccess(listOf(User(name = "User", password = "", email="", isDoctor=true)))
         )
     }
 }

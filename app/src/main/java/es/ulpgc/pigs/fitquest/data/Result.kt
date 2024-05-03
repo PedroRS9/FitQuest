@@ -8,4 +8,6 @@ sealed class Result{
     data class ImageSuccess(val bytes: ByteArray): Result()
     data class ChatListSuccess(val users: List<User>): Result()
     data class ChatSuccess(val messages: List<Message>): Result()
+    data class ShopSuccess(val items: List<ShopItem>): Result()
+    data class BuySuccess(val boolean: Boolean): Result()
 }

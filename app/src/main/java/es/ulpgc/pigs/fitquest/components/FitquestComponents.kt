@@ -12,15 +12,20 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Email
@@ -41,6 +46,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -55,7 +61,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -63,9 +71,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -73,6 +83,8 @@ import androidx.compose.ui.unit.sp
 import es.ulpgc.pigs.fitquest.R
 import es.ulpgc.pigs.fitquest.data.Message
 import es.ulpgc.pigs.fitquest.ui.theme.DarkGreen
+import es.ulpgc.pigs.fitquest.ui.theme.DarkGrey
+import es.ulpgc.pigs.fitquest.ui.theme.LightGrey
 
 @Composable
 fun FitquestTransparentButton(
@@ -446,4 +458,136 @@ fun ChatBox(onSend: (String) -> Unit, modifier: Modifier) {
             )
         }
     }
+}
+
+@Composable
+fun FitquestSearchBar(
+    query: MutableState<String>,
+    onSearch: (String) -> Unit,
+    placeholderText: String = "Search",
+    backgroundColor: Color = LightGrey
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(15.dp)
+            .background(backgroundColor, RoundedCornerShape(20.dp))
+            .padding(horizontal = 12.dp, vertical = 2.dp) // this controls the size of the search bar
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            BasicTextField(
+                value = query.value,
+                onValueChange = { query.value = it },
+                singleLine = true,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        onSearch(query.value)
+                    }
+                ),
+                textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.DarkGray, fontSize = 16.sp),
+                cursorBrush = SolidColor(Color.Black),
+                decorationBox = { innerTextField ->
+                    if (query.value.isEmpty()) {
+                        Text(
+                            text = placeholderText,
+                            color = Color.Gray,
+                            fontSize = 16.sp
+                        )
+                    }
+                    innerTextField()
+                }
+            )
+            IconButton(
+                onClick = { onSearch(query.value) },
+                modifier = Modifier.align(Alignment.CenterVertically)
+            ) {
+                Icon(
+                    painter = painterResource(android.R.drawable.ic_menu_search),
+                    contentDescription = "Search",
+                    tint = Color.DarkGray
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ShopItemDisplay(
+    name: String,
+    price: Int,
+    image: Painter,
+    onClick: () -> Unit = {}
+) {
+    Surface(
+        modifier = Modifier
+            .padding(4.dp)
+            .width(120.dp)
+            .aspectRatio(1f)
+            .clickable(onClick = onClick),
+        color = LightGrey,
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .background(DarkGrey)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = image,
+                    contentDescription = name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(70.dp)
+                )
+            }
+            Text(
+                text = "$price",
+                fontSize = 20.sp,
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .background(LightGrey)
+                    .fillMaxWidth()
+                    .padding(4.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun ConfirmDialog(
+    title: String,
+    message: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit = {}
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = title)
+        },
+        text = {
+            Text(text = message)
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("Yes")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("No")
+            }
+        }
+    )
+
 }

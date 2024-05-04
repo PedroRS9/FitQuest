@@ -26,11 +26,11 @@ class ChatListViewModel : ViewModel() {
                     ImageRepository.downloadImage(user.getPictureURL()!!){ imageResult ->
                         if(imageResult is Result.ImageSuccess){
                             user.setPicture(imageResult.bytes)
-                            _chatListState.value = Result.ChatListSuccess(updatedResults)
                         }
                     }
                 }
             }
+            _chatListState.value = Result.ChatListSuccess(updatedResults)
         }
     }
 }

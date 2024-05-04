@@ -13,7 +13,8 @@ class User(
     private var picture: ByteArray? = null,
     private var level: Int = 1,
     private var xp: Int = 0,
-    private var points: Int = 0
+    private var points: Int = 0,
+    private var achievements: List<String> = listOf()
 ) {
     fun getId() = id
     fun getName() = name
@@ -37,6 +38,11 @@ class User(
     }
     fun setPoints(points: Int){
         this.points = points
+    }
+
+    fun getAchievements(): List<String> = achievements
+    fun addAchievement(achievementId: String) {
+        achievements = achievements + achievementId
     }
 
     fun getMinimumXpForCurrentLevel(): Int{

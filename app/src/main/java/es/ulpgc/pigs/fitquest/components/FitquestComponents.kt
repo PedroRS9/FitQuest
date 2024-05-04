@@ -85,6 +85,7 @@ import es.ulpgc.pigs.fitquest.data.Message
 import es.ulpgc.pigs.fitquest.ui.theme.DarkGreen
 import es.ulpgc.pigs.fitquest.ui.theme.DarkGrey
 import es.ulpgc.pigs.fitquest.ui.theme.LightGrey
+import es.ulpgc.pigs.fitquest.ui.theme.SaturatedGreen
 
 @Composable
 fun FitquestTransparentButton(
@@ -394,13 +395,15 @@ fun FitquestProfilePicture(
 
 @Composable
 fun ExperienceBar(
-    xpPercentage: Float
+    xpPercentage: Float,
+    modifier: Modifier = Modifier
 ) {
     LinearProgressIndicator(
-        modifier = Modifier
-            .height(25.dp),
-        color = Color(0xFF5EBCF0),
-        trackColor = Color.White,
+        modifier = modifier
+            .height(25.dp)
+        ,
+        color = SaturatedGreen,
+        trackColor = Color.Black,
         progress = xpPercentage
     )
 }
@@ -446,9 +449,9 @@ fun ChatBox(onSend: (String) -> Unit, modifier: Modifier) {
         )
         IconButton(onClick = { onSend(chatBoxValue.text) },
             modifier = Modifier
-                        .clip(CircleShape)
-                        .background(color = DarkGreen)
-                        .align(Alignment.CenterVertically)
+                .clip(CircleShape)
+                .background(color = DarkGreen)
+                .align(Alignment.CenterVertically)
         ) {
             Icon(
                 imageVector = Icons.Filled.Send,
@@ -589,5 +592,23 @@ fun ConfirmDialog(
             }
         }
     )
+}
 
+@Composable
+fun AchievementCard(
+    title: String,
+    description: String,
+    image: Painter,
+    modifier: Modifier = Modifier
+){
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Image(painter = image,
+            //painter = painterResource(id = R.drawable.default_profile_pic),
+            contentDescription = "Achievement image",
+            modifier = Modifier.size(60.dp))
+        Column(modifier = Modifier.fillMaxWidth().padding(10.dp), horizontalAlignment = Alignment.Start){
+            Text(text = title, color = Color.Black, fontSize = 20.sp)
+            Text(text = description, color = Color.Black, fontSize = 16.sp)
+        }
+    }
 }

@@ -10,4 +10,5 @@ sealed class Result{
     data class ChatSuccess(val messages: List<Message>): Result()
     data class ShopSuccess(val items: List<ShopItem>): Result()
     data class BuySuccess(val boolean: Boolean): Result()
+    data class AchievementSuccess(val achievements: List<Achievement>): Result()
 }

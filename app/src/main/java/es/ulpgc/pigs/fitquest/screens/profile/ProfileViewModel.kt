@@ -3,6 +3,9 @@ package es.ulpgc.pigs.fitquest.screens.profile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import es.ulpgc.pigs.fitquest.data.Achievement
+import es.ulpgc.pigs.fitquest.data.AchievementRepository
+import es.ulpgc.pigs.fitquest.data.FirebaseAchievementRepository
 import es.ulpgc.pigs.fitquest.data.FirebaseImageRepository
 import es.ulpgc.pigs.fitquest.data.FirebaseUserRepository
 import es.ulpgc.pigs.fitquest.data.ImageRepository
@@ -20,6 +23,10 @@ class ProfileViewModel() : ViewModel() {
     private val userRepository: UserRepository = FirebaseUserRepository()
     private val _updateState = MutableLiveData<Result>()
     val updateState: LiveData<Result> = _updateState
+
+    private val achievementRepository: AchievementRepository = FirebaseAchievementRepository()
+    private val _achievementState = MutableLiveData<Result>()
+    val achievementState: LiveData<Result> = _achievementState
 
     private lateinit var userGlobalConf: UserGlobalConf
 
@@ -64,6 +71,12 @@ class ProfileViewModel() : ViewModel() {
                 userGlobalConf.currentUser.value!!.setPicture(result.bytes)
             }
             _imageState.value = result
+        }
+    }
+
+    suspend fun getUserAchievements(user: User){
+        achievementRepository.getUserAchievements(user){ achievements: List<Achievement> ->
+            _achievementState.value = Result.AchievementSuccess(achievements)
         }
     }
 

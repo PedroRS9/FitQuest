@@ -2,6 +2,7 @@ package es.ulpgc.pigs.fitquest.data
 
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.firestore
 
 class FirebaseUserRepository : UserRepository {
@@ -22,7 +23,8 @@ class FirebaseUserRepository : UserRepository {
                         "pictureURL" to null,
                         "level" to 1,
                         "xp" to 0,
-                        "points" to 0
+                        "points" to 0,
+                        "achievements" to listOf<String>()
                     )
                     if (firebaseUser != null) {
                         try {
@@ -48,20 +50,10 @@ class FirebaseUserRepository : UserRepository {
             if (documents.isEmpty) {
                 callback(null)
             } else {
-                val document = documents.documents[0]
-                val user = User(
-                    id = document.id,
-                    name = document.getString("username") ?: "",
-                    password = "", // we don't store passwords on Firestore
-                    email = document.getString("email") ?: "",
-                    isDoctor = document.getBoolean("isDoctor") ?: false,
-                    pictureURL = document.getString("pictureURL"),
-                    level = document.getLong("level")?.toInt() ?: 1,
-                    xp = document.getLong("xp")?.toInt() ?: 0,
-                    points = document.getLong("points")?.toInt() ?: 0
-                )
-                callback(user)
+                callback(documentToUser(documents.documents[0]))
             }
+        }.addOnFailureListener {
+            // Handle failure
         }
     }
 
@@ -70,33 +62,15 @@ class FirebaseUserRepository : UserRepository {
             if (documents.isEmpty) {
                 callback(null)
             } else {
-                val document = documents.documents[0]
-                val user = User(
-                    id = document.id,
-                    name = document.getString("username") ?: "",
-                    password = "", // passwords aren't stored on Firestore
-                    email = document.getString("email") ?: "",
-                    isDoctor = document.getBoolean("isDoctor") ?: false,
-                    pictureURL = document.getString("pictureURL"),
-                    level = document.getLong("level")?.toInt() ?: 1,
-                    xp = document.getLong("xp")?.toInt() ?: 0,
-                    points = document.getLong("points")?.toInt() ?: 0
-                )
-                callback(user)
+                callback(documentToUser(documents.documents[0]))
             }
+        }.addOnFailureListener {
+            // Handle failure
         }
     }
 
     override fun updateUser(user: User, callback: (Result) -> Unit) {
-        val userMap = hashMapOf(
-            "username" to user.getName(),
-            "email" to user.getEmail(),
-            "pictureURL" to user.getPictureURL(),
-            "level" to user.getLevel(),
-            "xp" to user.getXp(),
-            "isDoctor" to user.isDoctor(),
-            "points" to user.getPoints()
-        )
+        val userMap = userToMap(user)
         database.collection("users").document(user.getId()).update(userMap as Map<String, Any>).addOnCompleteListener {
             if (it.isSuccessful) {
                 callback(Result.GeneralSuccess(true))
@@ -111,15 +85,7 @@ class FirebaseUserRepository : UserRepository {
     override fun searchUsers(query: String, callback: (SearchResult) -> Unit) {
         database.collection("users").whereGreaterThanOrEqualTo("username", query).whereLessThanOrEqualTo("username", query + "\uf8ff").get().addOnSuccessListener { documents ->
             val users = documents.map { document ->
-                User(
-                    name = document.getString("username") ?: "",
-                    password = "", // we don't store passwords in firestore
-                    email = document.getString("email") ?: "",
-                    isDoctor = document.getBoolean("isDoctor") ?: false,
-                    pictureURL = document.getString("pictureURL"),
-                    level = document.getLong("level")?.toInt() ?: 1,
-                    xp = document.getLong("xp")?.toInt() ?: 0
-                )
+                documentToUser(document)
             }
             callback(SearchResult.ShowResults(users))
         }.addOnFailureListener {
@@ -130,19 +96,38 @@ class FirebaseUserRepository : UserRepository {
     override fun getAllDoctors(callback: (List<User>) -> Unit) {
         database.collection("users").whereEqualTo("isDoctor", true).get().addOnSuccessListener { documents ->
             val doctors = documents.map { document ->
-                User(
-                    name = document.getString("username") ?: "",
-                    password = "", // we don't store passwords in firestore
-                    email = document.getString("email") ?: "",
-                    isDoctor = document.getBoolean("isDoctor") ?: false,
-                    pictureURL = document.getString("pictureURL"),
-                    level = document.getLong("level")?.toInt() ?: 1,
-                    xp = document.getLong("xp")?.toInt() ?: 0
-                )
+                documentToUser(document)
             }
             callback(doctors)
         }
     }
 
+    private fun documentToUser(document: DocumentSnapshot): User {
+        return User(
+            id = document.id,
+            name = document.getString("username") ?: "",
+            password = "", // we don't store passwords in firestore
+            email = document.getString("email") ?: "",
+            isDoctor = document.getBoolean("isDoctor") ?: false,
+            pictureURL = document.getString("pictureURL"),
+            level = document.getLong("level")?.toInt() ?: 1,
+            xp = document.getLong("xp")?.toInt() ?: 0,
+            points = document.getLong("points")?.toInt() ?: 0,
+            achievements = document.get("achievements") as? List<String> ?: listOf()
+        )
+    }
+
+    private fun userToMap(user: User): Map<String, Any?> {
+        return mapOf(
+            "username" to user.getName(),
+            "email" to user.getEmail(),
+            "isDoctor" to user.isDoctor(),
+            "pictureURL" to user.getPictureURL(),
+            "level" to user.getLevel(),
+            "xp" to user.getXp(),
+            "points" to user.getPoints(),
+            "achievements" to user.getAchievements()
+        )
+    }
 
 }

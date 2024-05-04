@@ -2,6 +2,7 @@ package es.ulpgc.pigs.fitquest.screens.profile
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -9,9 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,7 +19,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,20 +40,24 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import es.ulpgc.pigs.fitquest.components.FitquestProfilePicture
 import es.ulpgc.pigs.fitquest.data.User
 import es.ulpgc.pigs.fitquest.extensions.fitquestBackground
 import es.ulpgc.pigs.fitquest.global.UserGlobalConf
-import es.ulpgc.pigs.fitquest.ui.theme.FitquestTheme
 import coil.compose.rememberAsyncImagePainter
 import es.ulpgc.pigs.fitquest.R
+import es.ulpgc.pigs.fitquest.components.AchievementCard
 import es.ulpgc.pigs.fitquest.components.ErrorDialog
 import es.ulpgc.pigs.fitquest.components.ExperienceBar
+import es.ulpgc.pigs.fitquest.data.Achievement
 import es.ulpgc.pigs.fitquest.data.Result
 import es.ulpgc.pigs.fitquest.navigation.BottomNavigationBar
 import es.ulpgc.pigs.fitquest.navigation.TopNavigationBar
+import es.ulpgc.pigs.fitquest.ui.theme.LightGrey
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
+
 
 @ExperimentalMaterial3Api
 @Composable
@@ -65,9 +67,11 @@ fun ProfileScreen(navController: NavController, backStackEntry: NavBackStackEntr
     viewModel.setUserGlobalConf(userGlobalConf)
     LaunchedEffect(Unit){
         viewModel.checkIfPictureIsDownloaded()
+        viewModel.getUserAchievements(user!!)
     }
     val imageState by viewModel.imageState.observeAsState()
     val updateState by viewModel.updateState.observeAsState()
+    val achievementState by viewModel.achievementState.observeAsState()
     Scaffold(
         topBar = { TopNavigationBar(navController, title = stringResource(R.string.topbar_profile_title)) },
         bottomBar = { BottomNavigationBar(navController) }
@@ -80,6 +84,7 @@ fun ProfileScreen(navController: NavController, backStackEntry: NavBackStackEntr
             clearViewModel = { viewModel.clearError()},
             imageState = imageState,
             updateState = updateState,
+            achievementState = achievementState,
             paddingValues = paddingValues
         )
     }
@@ -92,6 +97,7 @@ fun BodyContent(
     clearViewModel: () -> Unit,
     imageState: Result?,
     updateState: Result?,
+    achievementState: Result?,
     paddingValues: PaddingValues
 ){
     val painter = when (imageState) {
@@ -100,9 +106,15 @@ fun BodyContent(
     }
     val showDialog = remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
+    var userAchievements by remember { mutableStateOf(listOf<Achievement>()) }
     val context = LocalContext.current
+    if(achievementState is Result.AchievementSuccess){
+        userAchievements = achievementState.achievements
+    }
     Column(
-        modifier = Modifier.fitquestBackground().padding(paddingValues),
+        modifier = Modifier
+            .fitquestBackground()
+            .padding(paddingValues),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         val launcher = rememberLauncherForActivityResult(
@@ -138,24 +150,35 @@ fun BodyContent(
                 )
             }
         }
-        Text(text = user.getName(), color = Color.White, fontSize = 30.sp, modifier = Modifier.padding(20.dp))
-        Text(text = "Level ${user.getLevel()}", color = Color.White, fontSize = 20.sp)
-        Spacer(modifier = Modifier.height(5.dp))
-        ExperienceBar(user.calculateXpPercentage())
-        Spacer(modifier = Modifier.height(40.dp))
-        Box(
+        Text(text = user.getName(), color = Color.Black, fontSize = 30.sp)
+        Text(text = "Level ${user.getLevel()}", color = Color.Black, fontSize = 20.sp)
+        ExperienceBar(user.calculateXpPercentage(), modifier = Modifier.padding(20.dp))
+        Column(
             modifier = Modifier
-                .size(250.dp)
+                .size(340.dp)
                 .clip(RoundedCornerShape(20.dp))
-                .background(Color(0xFF382155)),
-            contentAlignment = Alignment.TopCenter
+                .background(LightGrey),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "ACHIEVEMENTS",
-                color = Color.White,
+                color = Color.Black,
                 fontSize = 25.sp,
                 modifier = Modifier.padding(10.dp)
             )
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp),
+                horizontalAlignment = Alignment.Start){
+                for(achievement in userAchievements){
+                    AchievementCard(title = achievement.title,
+                        description = achievement.description,
+                        //image = rememberAsyncImagePainter(achievement.image)
+                        image = rememberAsyncImagePainter(model = achievement.image)
+                    )
+                }
+            }
+
         }
 
         if(showDialog.value){
@@ -180,22 +203,46 @@ fun BodyContent(
     }
 }
 
+@ExperimentalMaterial3Api
 @Preview
 @Composable
 fun ShowPreview(){
-    FitquestTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            BodyContent(
-                user = User(name = "PedroRS9", email = "", password = "", isDoctor = false,level = 1, xp = 50),
-                imageState = null,
-                updateState = null,
-                clearViewModel = {},
-                uploadImage = { _, _, _ -> },
-                paddingValues = PaddingValues(0.dp, 0.dp, 0.dp, 0.dp)
-            )
-        }
+    val user = User(name = "Paquito", password = "", email = "", isDoctor = false, xp=50, level=1)
+    val updateState = Result.GeneralSuccess(true)
+    val navController: NavController = rememberNavController()
+    val byteArray = createBlueBitmapByteArray(1000, 1000)
+    val achievements = listOf(
+        Achievement(id = "", title = "Achievement 1", description = "Description 1", image = byteArray, category = ""),
+        Achievement(id = "", title = "Achievement 2", description = "Description 2", image = byteArray, category = "")
+    )
+    Scaffold(
+        topBar = { TopNavigationBar(navController, title = stringResource(R.string.topbar_profile_title)) },
+        bottomBar = { BottomNavigationBar(navController) }
+    ) { paddingValues ->
+        BodyContent(
+            user = user,
+            uploadImage = { filename: String, byteArray: ByteArray, us: User -> },
+            clearViewModel = {},
+            imageState = null,
+            updateState = updateState,
+            achievementState = Result.AchievementSuccess(achievements),
+            paddingValues = paddingValues
+        )
     }
+}
+
+fun createBlueBitmapByteArray(width: Int, height: Int): ByteArray {
+    // Crea un Bitmap mutable con el color azul
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    // Dibujar un rectángulo rojo en el Bitmap
+    canvas.drawColor(android.graphics.Color.BLUE)
+
+    // Convertir el Bitmap a un array de bytes
+    val stream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)  // Comprimir el bitmap como PNG
+    val byteArray = stream.toByteArray()
+    stream.close()
+
+    return byteArray
 }

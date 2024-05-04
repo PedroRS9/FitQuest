@@ -1,14 +1,11 @@
 package es.ulpgc.pigs.fitquest.screens.mainmenu
 
-import android.app.Activity
-import android.content.pm.PackageManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -25,14 +22,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -41,7 +35,6 @@ import coil.compose.rememberAsyncImagePainter
 import es.ulpgc.pigs.fitquest.R
 import es.ulpgc.pigs.fitquest.components.ErrorDialog
 import es.ulpgc.pigs.fitquest.components.FitquestClickableText
-import es.ulpgc.pigs.fitquest.components.FitquestProfilePicture
 import es.ulpgc.pigs.fitquest.data.Result
 import es.ulpgc.pigs.fitquest.data.User
 import es.ulpgc.pigs.fitquest.extensions.fitquestBackground
@@ -54,20 +47,25 @@ import es.ulpgc.pigs.fitquest.ui.theme.FitquestTheme
 @ExperimentalMaterial3Api
 @Composable
 fun MainMenuScreen(navController: NavController, backStackEntry: NavBackStackEntry, userGlobalConf: UserGlobalConf) {
+    val showDialog = remember { mutableStateOf(false) }
     val user by userGlobalConf.currentUser.observeAsState()
     val viewModel: MainMenuViewModel = viewModel(backStackEntry)
     viewModel.setUserGlobalConf(userGlobalConf)
+
     LaunchedEffect(Unit){
         viewModel.checkIfPictureIsDownloaded()
     }
+
     val imageState by viewModel.imageState.observeAsState()
-    val showDialog = remember { mutableStateOf(false) }
+
     BackHandler {
         showDialog.value = true
     }
+
     if (showDialog.value) {
         ConfirmLogoutDialog(showDialog = showDialog, navController)
     }
+
     Scaffold(
         topBar = { TopNavigationBar(navController = navController, title = stringResource(R.string.topbar_mainmenu_title)) },
         bottomBar = { BottomNavigationBar(navController) }
@@ -76,8 +74,7 @@ fun MainMenuScreen(navController: NavController, backStackEntry: NavBackStackEnt
             navController = navController,
             user = user,
             imageState = imageState,
-            paddingValues = paddingValues
-        )
+            paddingValues = paddingValues)
     }
 }
 

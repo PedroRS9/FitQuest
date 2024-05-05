@@ -1,32 +1,49 @@
 package es.ulpgc.pigs.fitquest.screens.mainmenu
 
+import StepCounterManager
+import android.content.Context
+import android.content.pm.PackageManager
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -43,6 +60,8 @@ import es.ulpgc.pigs.fitquest.navigation.AppScreens
 import es.ulpgc.pigs.fitquest.navigation.BottomNavigationBar
 import es.ulpgc.pigs.fitquest.navigation.TopNavigationBar
 import es.ulpgc.pigs.fitquest.ui.theme.FitquestTheme
+import java.util.Timer
+import kotlin.concurrent.scheduleAtFixedRate
 
 @ExperimentalMaterial3Api
 @Composable
@@ -51,6 +70,8 @@ fun MainMenuScreen(navController: NavController, backStackEntry: NavBackStackEnt
     val user by userGlobalConf.currentUser.observeAsState()
     val viewModel: MainMenuViewModel = viewModel(backStackEntry)
     viewModel.setUserGlobalConf(userGlobalConf)
+    val context = LocalContext.current
+    var steps by remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit){
         viewModel.checkIfPictureIsDownloaded()
@@ -70,11 +91,72 @@ fun MainMenuScreen(navController: NavController, backStackEntry: NavBackStackEnt
         topBar = { TopNavigationBar(navController = navController, title = stringResource(R.string.topbar_mainmenu_title)) },
         bottomBar = { BottomNavigationBar(navController) }
     ) { paddingValues ->
-        BodyContent(
-            navController = navController,
-            user = user,
-            imageState = imageState,
-            paddingValues = paddingValues)
+            BodyContent(
+                navController = navController,
+                user = user,
+                imageState = imageState,
+                paddingValues = paddingValues
+            )
+        StepCounterScreen(context)
+    }
+}
+
+@Composable
+fun StepCounterScreen(context: Context) {
+    var steps by remember { mutableStateOf(0) }
+    val permissionGranted = checkPermission(context, android.Manifest.permission.ACTIVITY_RECOGNITION)
+    if (!permissionGranted) {
+        Text(text = "No detecta el permiso")
+        return
+    } else {
+        Text(text = "Si lo detecta")
+        val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+        val sensorListener = object : SensorEventListener {
+            override fun onSensorChanged(event: SensorEvent?) {
+                event?.let {
+                    val newSteps = event.values[0].toInt()
+                    steps = newSteps
+                }
+            }
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) { }
+        }
+        sensorManager.registerListener(sensorListener, sensor, SensorManager.SENSOR_DELAY_NORMAL)
+
+    }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CircularProgressIndicator(
+            progress = steps.toFloat() / 1000f,
+            modifier = Modifier
+                .size(180.dp)
+                .padding(20.dp),
+            strokeWidth = 10.dp,
+            color = Color.Green
+        )
+
+        Text(text = "Steps: $steps")
+
+        ResetButton {
+            steps = 0
+        }
+    }
+}
+
+fun checkPermission(context: Context, permission: String): Boolean {
+    return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+}
+
+@Composable
+fun ResetButton(onClick: () -> Unit) {
+    TextButton(
+        onClick = onClick,
+        modifier = Modifier.padding(top = 16.dp)
+    ) {
+        Text(text = "Resetear contador")
     }
 }
 
@@ -157,8 +239,6 @@ fun ConfirmLogoutDialog(showDialog: MutableState<Boolean>, navController: NavCon
         }
     )
 }
-
-
 
 
 @Preview

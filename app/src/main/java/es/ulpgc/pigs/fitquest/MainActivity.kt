@@ -1,19 +1,22 @@
 package es.ulpgc.pigs.fitquest
 
-import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import es.ulpgc.pigs.fitquest.global.PERMISSION_REQUEST_CODE
-import es.ulpgc.pigs.fitquest.global.RequestPermissionButton
-
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import es.ulpgc.pigs.fitquest.navigation.AppNavigation
 import es.ulpgc.pigs.fitquest.ui.theme.FitquestTheme
 
@@ -29,67 +32,31 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     AppNavigation()
+                    Content()
                 }
             }
         }
     }
-/*
-    Esto es por el tema de los permisos
-    Por ahora te los pide si no los tienes
-    
+    @OptIn(ExperimentalPermissionsApi::class)
+    @Composable
+    fun Content() {
+        val activityPermissionState = rememberPermissionState(permission = android.Manifest.permission.ACTIVITY_RECOGNITION)
 
-    setContent {
-        FitquestTheme {
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.background
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Otros componentes de tu UI
+        Column {
+            Button(onClick = {
 
-                    RequestPermissionButton(
-                        permission = android.Manifest.permission.ACTIVITY_RECOGNITION,
-                        onPermissionGranted = {
-                            // Permiso concedido, realizar acciones necesarias
-                        },
-                        onPermissionDenied = {
-                            // Permiso denegado, mostrar mensaje o realizar acciones necesarias
-                        }
-                    )
+            }) {
+                // Don't delete de Text since development. It's a permission log
+                Text(text = "Activity Permission ${activityPermissionState.status.isGranted}")
+                LaunchedEffect(Unit){
+                    activityPermissionState.launchPermissionRequest()
                 }
-            }
-        }
-    }
-
- */
-
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            PERMISSION_REQUEST_CODE -> {
-                if (grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED
-                ) {
-                    // Permiso concedido
-                    // Realizar acciones necesarias, como iniciar el contador de pasos
-                } else {
-                    // Permiso denegado
-                    // Realizar acciones necesarias, como mostrar un mensaje de que se necesita el permiso
-                }
-                return
             }
         }
     }
 }
+
+
 
 
 

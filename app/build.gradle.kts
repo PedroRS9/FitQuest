@@ -89,4 +89,6 @@ dependencies {
     // https://firebase.google.com/docs/android/setup#available-libraries
 
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
+    implementation("com.google.accompanist:accompanist-permissions:0.29.2-rc")
 }

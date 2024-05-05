@@ -34,6 +34,10 @@ class ProfileViewModel() : ViewModel() {
         this.userGlobalConf = userGlobalConf
     }
 
+    fun getUserGlobalConf(): UserGlobalConf {
+        return userGlobalConf
+    }
+
     fun onChooseImage(filename: String, byteArray: ByteArray, user: User){
         _imageState.value = Result.Loading
         imageRepository.uploadImage(filename, byteArray){ result: Result ->
@@ -52,25 +56,26 @@ class ProfileViewModel() : ViewModel() {
         }
     }
 
-    fun checkIfPictureIsDownloaded(){
-        val user = userGlobalConf.currentUser.value!!
+    fun checkIfPictureIsDownloaded(user: User){
         val userHasProfilePicture = user.getPictureURL() != null
         val pictureIsDownloaded = user.getPicture() != null
         if(userHasProfilePicture){
             if(pictureIsDownloaded){
                 _imageState.value = Result.ImageSuccess(user.getPicture()!!)
             } else {
-                downloadPicture(user.getPictureURL()!!)
+                downloadPicture(user.getPictureURL()!!){ result ->
+                    if(result is Result.ImageSuccess) {
+                        user.setPicture(result.bytes)
+                    }
+                    _imageState.value = result
+                }
             }
         }
     }
 
-    fun downloadPicture(pictureURL: String){
+    fun downloadPicture(pictureURL: String, callback: (Result) -> Unit){
         imageRepository.downloadImage(pictureURL){ result: Result ->
-            if(result is Result.ImageSuccess){
-                userGlobalConf.currentUser.value!!.setPicture(result.bytes)
-            }
-            _imageState.value = result
+            callback(result)
         }
     }
 
@@ -82,5 +87,15 @@ class ProfileViewModel() : ViewModel() {
 
     fun clearError() {
         _imageState.value = null
+    }
+
+    fun downloadAnotherUser(username: String, callback: (User) -> Unit){
+        userRepository.findUserByUsername(username){ user: User? ->
+            if(user != null){
+                _updateState.value = Result.LoginSuccess(user)
+                checkIfPictureIsDownloaded(user)
+                callback(user)
+            }
+        }
     }
 }

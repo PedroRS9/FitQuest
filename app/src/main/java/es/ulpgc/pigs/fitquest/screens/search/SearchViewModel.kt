@@ -21,7 +21,7 @@ class SearchViewModel : ViewModel(){
         _searchState.value = SearchResult.Loading
         userRepository.searchUsers(query){ result ->
             _searchState.value = result
-            if(result is SearchResult.ShowResults){
+            if(result is SearchResult.Results){
                 // for each user in the list, we download the profile picture
                 val updatedResults = result.results
                 updatedResults.forEach { user ->
@@ -35,6 +35,8 @@ class SearchViewModel : ViewModel(){
                         }
                     }
                 }
+            } else{
+                _searchState.value = result
             }
         }
     }

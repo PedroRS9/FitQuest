@@ -5,7 +5,10 @@ sealed class AppScreens(val route: String){
     object LoginScreen: AppScreens("login_screen")
     object SignupScreen: AppScreens("signup_screen")
     object MainMenuScreen: AppScreens("mainmenu_screen")
-    object ProfileScreen: AppScreens("profile_screen")
+    object ProfileScreen : AppScreens("profile_screen")
+    object DifferentProfileScreen : AppScreens("differentprofile_screen/{username}") {
+        fun createRoute(username: String) = "differentprofile_screen/$username"
+    }
     object SearchScreen : AppScreens("search_screen")
     object ChatListScreen : AppScreens("chatlist_screen")
     object ChatScreen : AppScreens("chat_screen/{username}") {

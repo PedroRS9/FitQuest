@@ -37,6 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -55,19 +56,29 @@ import es.ulpgc.pigs.fitquest.data.Result
 import es.ulpgc.pigs.fitquest.navigation.BottomNavigationBar
 import es.ulpgc.pigs.fitquest.navigation.TopNavigationBar
 import es.ulpgc.pigs.fitquest.ui.theme.LightGrey
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
 
 @ExperimentalMaterial3Api
 @Composable
-fun ProfileScreen(navController: NavController, backStackEntry: NavBackStackEntry, userGlobalConf: UserGlobalConf){
+fun ProfileScreen(navController: NavController, backStackEntry: NavBackStackEntry, userGlobalConf: UserGlobalConf, anotherUsername: String? = null){
     val user by userGlobalConf.currentUser.observeAsState()
+    val anotherUser = User(name = anotherUsername ?: "", password = "", email = "", isDoctor = false, xp=0, level=0) // it will be downloaded later
     val viewModel: ProfileViewModel = viewModel(backStackEntry)
     viewModel.setUserGlobalConf(userGlobalConf)
     LaunchedEffect(Unit){
-        viewModel.checkIfPictureIsDownloaded()
-        viewModel.getUserAchievements(user!!)
+        if(anotherUsername == null){
+            viewModel.checkIfPictureIsDownloaded(viewModel.getUserGlobalConf().currentUser.value!!)
+            viewModel.getUserAchievements(user!!)
+        } else{
+            viewModel.downloadAnotherUser(anotherUsername){ u ->
+                viewModel.viewModelScope.launch {
+                    viewModel.getUserAchievements(u)
+                }
+            }
+        }
     }
     val imageState by viewModel.imageState.observeAsState()
     val updateState by viewModel.updateState.observeAsState()
@@ -77,7 +88,7 @@ fun ProfileScreen(navController: NavController, backStackEntry: NavBackStackEntr
         bottomBar = { BottomNavigationBar(navController) }
     ) { paddingValues ->
         BodyContent(
-            user = user ?: User(name = "Error", password = "", email = "", isDoctor=false),
+            user = if(anotherUsername == null) user!! else anotherUser,
             uploadImage = { filename: String, byteArray: ByteArray, us: User ->
                 viewModel.onChooseImage(filename, byteArray, us)
             },
@@ -85,7 +96,8 @@ fun ProfileScreen(navController: NavController, backStackEntry: NavBackStackEntr
             imageState = imageState,
             updateState = updateState,
             achievementState = achievementState,
-            paddingValues = paddingValues
+            paddingValues = paddingValues,
+            isAnotherUser = anotherUsername != null
         )
     }
 }
@@ -98,7 +110,8 @@ fun BodyContent(
     imageState: Result?,
     updateState: Result?,
     achievementState: Result?,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    isAnotherUser: Boolean
 ){
     val painter = when (imageState) {
         is Result.ImageSuccess -> { rememberAsyncImagePainter(imageState.bytes) }
@@ -107,6 +120,7 @@ fun BodyContent(
     val showDialog = remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var userAchievements by remember { mutableStateOf(listOf<Achievement>()) }
+    var userValue by remember { mutableStateOf(user) }
     val context = LocalContext.current
     if(achievementState is Result.AchievementSuccess){
         userAchievements = achievementState.achievements
@@ -127,7 +141,7 @@ fun BodyContent(
                     val outputStream = ByteArrayOutputStream()
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
                     val bytes = outputStream.toByteArray()
-                    uploadImage("${user.getName()}.jpg", bytes, user)
+                    uploadImage("${userValue.getName()}.jpg", bytes, userValue)
                 }
             }
         }
@@ -143,16 +157,16 @@ fun BodyContent(
                 )
             }
             else -> {
-                FitquestProfilePicture(userProfileImage = painter, isChangeable = true, modifier = Modifier.padding(20.dp),
+                FitquestProfilePicture(userProfileImage = painter, isChangeable = !isAnotherUser, modifier = Modifier.padding(20.dp),
                     onUploadImageClick = {
                         launcher.launch("image/*")
                     }
                 )
             }
         }
-        Text(text = user.getName(), color = Color.Black, fontSize = 30.sp)
-        Text(text = "Level ${user.getLevel()}", color = Color.Black, fontSize = 20.sp)
-        ExperienceBar(user.calculateXpPercentage(), modifier = Modifier.padding(20.dp))
+        Text(text = userValue.getName(), color = Color.Black, fontSize = 30.sp)
+        Text(text = "Level ${userValue.getLevel()}", color = Color.Black, fontSize = 20.sp)
+        ExperienceBar(userValue.calculateXpPercentage(), modifier = Modifier.padding(20.dp))
         Column(
             modifier = Modifier
                 .size(340.dp)
@@ -197,7 +211,7 @@ fun BodyContent(
                 showDialog.value = true
                 clearViewModel()
             }
-            null -> {}
+            is Result.LoginSuccess -> userValue = updateState.user
             else -> {}
         }
     }
@@ -226,7 +240,8 @@ fun ShowPreview(){
             imageState = null,
             updateState = updateState,
             achievementState = Result.AchievementSuccess(achievements),
-            paddingValues = paddingValues
+            paddingValues = paddingValues,
+            isAnotherUser = false
         )
     }
 }

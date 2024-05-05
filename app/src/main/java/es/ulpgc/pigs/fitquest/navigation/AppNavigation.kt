@@ -10,6 +10,8 @@ import androidx.navigation.navArgument
 import es.ulpgc.pigs.fitquest.global.UserGlobalConf
 import es.ulpgc.pigs.fitquest.screens.chatscreen.ChatListScreen
 import es.ulpgc.pigs.fitquest.screens.chatscreen.ChatScreen
+import es.ulpgc.pigs.fitquest.screens.getfit.GetFitScreen
+import es.ulpgc.pigs.fitquest.screens.groups.GroupsScreen
 import es.ulpgc.pigs.fitquest.screens.loginscreen.LoginScreen
 import es.ulpgc.pigs.fitquest.screens.mainmenu.MainMenuScreen
 import es.ulpgc.pigs.fitquest.screens.profile.ProfileScreen
@@ -40,7 +42,13 @@ fun AppNavigation() {
             SearchScreen(navController, backStackEntry)
         }
         composable(route = AppScreens.ProfileScreen.route){ backStackEntry ->
-            ProfileScreen(navController, backStackEntry, userGlobalConf)
+            ProfileScreen(navController, backStackEntry, userGlobalConf, null)
+        }
+        composable(route = AppScreens.DifferentProfileScreen.route,
+            arguments = listOf(navArgument("username") { type = NavType.StringType })
+        ){ backStackEntry ->
+            val username = backStackEntry.arguments?.getString("username")
+            ProfileScreen(navController, backStackEntry, userGlobalConf, username)
         }
         composable(route = AppScreens.ChatListScreen.route){ backStackEntry ->
             ChatListScreen(navController, backStackEntry, userGlobalConf)
@@ -54,6 +62,12 @@ fun AppNavigation() {
         // a composable for the shop screen
         composable(route = AppScreens.ShopScreen.route){ backStackEntry ->
             ShopScreen(navController, backStackEntry, userGlobalConf)
+        }
+        composable(route = AppScreens.GroupsScreen.route){ backStackEntry ->
+            GroupsScreen(navController = navController, userGlobalConf = userGlobalConf)
+        }
+        composable(route = AppScreens.GetFitScreen.route){ backStackEntry ->
+            GetFitScreen(navController = navController, userGlobalConf = userGlobalConf)
         }
     }
 }

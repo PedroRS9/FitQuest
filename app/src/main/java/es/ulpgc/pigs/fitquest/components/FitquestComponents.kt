@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -610,5 +611,26 @@ fun AchievementCard(
             Text(text = title, color = Color.Black, fontSize = 20.sp)
             Text(text = description, color = Color.Black, fontSize = 16.sp)
         }
+    }
+}
+
+@Composable
+fun UserItemList(profilePicture: Painter, username: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .background(Color.Gray)
+            .clickable(onClick = onClick),
+        verticalAlignment = Alignment.CenterVertically,
+        //horizontalArrangement = Arrangement.Center
+    ){
+        Spacer(modifier = Modifier.width(10.dp))
+        Image(
+            painter = profilePicture,
+            contentDescription = "Profile picture"
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(text = username, fontSize = 30.sp,  color= Color.White)
     }
 }

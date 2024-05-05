@@ -87,7 +87,7 @@ class FirebaseUserRepository : UserRepository {
             val users = documents.map { document ->
                 documentToUser(document)
             }
-            callback(SearchResult.ShowResults(users))
+            callback(SearchResult.Results(users))
         }.addOnFailureListener {
             callback(SearchResult.ShowError(it))
         }

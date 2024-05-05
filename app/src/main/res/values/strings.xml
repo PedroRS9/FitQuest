@@ -27,4 +27,6 @@
     <string name="topbar_mainmenu_title">Main Menu</string>
     <string name="topbar_chat_title">Chat</string>
     <string name="topbar_shop_title">Shop</string>
+    <string name="topbar_groups_title">Groups</string>
+    <string name="topbar_getfit_title">Get Fit</string>
 </resources>

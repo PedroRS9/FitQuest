@@ -32,7 +32,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -92,12 +91,12 @@ fun MainMenuScreen(navController: NavController, backStackEntry: NavBackStackEnt
                 imageState = imageState,
                 paddingValues = paddingValues
             )
-        StepCounterScreen(context)
+        StepCounterScreen(context, user)
     }
 }
 
 @Composable
-fun StepCounterScreen(context: Context) {
+fun StepCounterScreen(context: Context, user: User?) {
     var steps by remember { mutableStateOf(0) }
     val permissionGranted = checkPermission(context, android.Manifest.permission.ACTIVITY_RECOGNITION)
     if (!permissionGranted) {
@@ -116,6 +115,11 @@ fun StepCounterScreen(context: Context) {
                     event?.let {
                         val newSteps = event.values[0].toInt()
                         steps = newSteps
+
+                        // Aumentar la experiencia del usuario por cada paso
+                        user?.addXp(1)
+                        Toast.makeText(context, "Experiencia del usuario: ${user?.getXp()}", Toast.LENGTH_SHORT).show()
+
                     }
                 }
                 override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) { }

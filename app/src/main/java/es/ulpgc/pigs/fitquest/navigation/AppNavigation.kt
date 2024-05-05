@@ -1,5 +1,6 @@
 package es.ulpgc.pigs.fitquest.navigation
 
+import es.ulpgc.pigs.fitquest.SplashScreen
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
@@ -25,7 +26,10 @@ import es.ulpgc.pigs.fitquest.screens.welcomemenu.WelcomeScreen
 fun AppNavigation() {
     val navController = rememberNavController()
     val userGlobalConf = UserGlobalConf()
-    NavHost(navController = navController, startDestination = AppScreens.WelcomeScreen.route){
+    NavHost(navController = navController, startDestination = AppScreens.SplashScreen.route){
+        composable(route = AppScreens.SplashScreen.route){
+            SplashScreen(navController)
+        }
         composable(route = AppScreens.WelcomeScreen.route){
             WelcomeScreen(navController)
         }

@@ -1,6 +1,7 @@
 package es.ulpgc.pigs.fitquest.navigation
 
 sealed class AppScreens(val route: String){
+    object SplashScreen : AppScreens("splash_screen")
     object WelcomeScreen : AppScreens("welcome_screen")
     object LoginScreen: AppScreens("login_screen")
     object SignupScreen: AppScreens("signup_screen")

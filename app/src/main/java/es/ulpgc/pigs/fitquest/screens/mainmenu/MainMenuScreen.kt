@@ -1,12 +1,12 @@
 package es.ulpgc.pigs.fitquest.screens.mainmenu
 
-import StepCounterManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,14 +17,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -34,12 +32,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,8 +58,6 @@ import es.ulpgc.pigs.fitquest.navigation.AppScreens
 import es.ulpgc.pigs.fitquest.navigation.BottomNavigationBar
 import es.ulpgc.pigs.fitquest.navigation.TopNavigationBar
 import es.ulpgc.pigs.fitquest.ui.theme.FitquestTheme
-import java.util.Timer
-import kotlin.concurrent.scheduleAtFixedRate
 
 @ExperimentalMaterial3Api
 @Composable
@@ -71,7 +67,6 @@ fun MainMenuScreen(navController: NavController, backStackEntry: NavBackStackEnt
     val viewModel: MainMenuViewModel = viewModel(backStackEntry)
     viewModel.setUserGlobalConf(userGlobalConf)
     val context = LocalContext.current
-    var steps by remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit){
         viewModel.checkIfPictureIsDownloaded()
@@ -106,38 +101,45 @@ fun StepCounterScreen(context: Context) {
     var steps by remember { mutableStateOf(0) }
     val permissionGranted = checkPermission(context, android.Manifest.permission.ACTIVITY_RECOGNITION)
     if (!permissionGranted) {
-        Text(text = "No detecta el permiso")
+        Text(text = "NO LO DETECTA")
         return
     } else {
-        Text(text = "Si lo detecta")
+        Toast.makeText(context, "LO DETECTA", Toast.LENGTH_SHORT).show()
         val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
-        val sensorListener = object : SensorEventListener {
-            override fun onSensorChanged(event: SensorEvent?) {
-                event?.let {
-                    val newSteps = event.values[0].toInt()
-                    steps = newSteps
+        val sensor1 = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
+        if (sensor1 == null) {
+            Toast.makeText(context, "DETECTOR NOT FOUND", Toast.LENGTH_SHORT).show()
+        } else {
+            val sensorListener = object : SensorEventListener {
+                override fun onSensorChanged(event: SensorEvent?) {
+                    event?.let {
+                        val newSteps = event.values[0].toInt()
+                        steps = newSteps
+                    }
                 }
+                override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) { }
             }
-            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) { }
+            sensorManager.registerListener(sensorListener, sensor, SensorManager.SENSOR_DELAY_NORMAL)
         }
-        sensorManager.registerListener(sensorListener, sensor, SensorManager.SENSOR_DELAY_NORMAL)
-
     }
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val gradientColors = listOf(
+            Color(android.graphics.Color.parseColor("#00FF00")), // Color inicial (lima)
+            Color(android.graphics.Color.parseColor("#006400"))  // Color final (verde oscuro)
+        )
         CircularProgressIndicator(
             progress = steps.toFloat() / 1000f,
             modifier = Modifier
-                .size(180.dp)
+                .size(320.dp)
                 .padding(20.dp),
-            strokeWidth = 10.dp,
-            color = Color.Green
+            strokeWidth = 20.dp,
+            color = Color(android.graphics.Color.parseColor("#00FF00"))
         )
-
         Text(text = "Steps: $steps")
 
         ResetButton {

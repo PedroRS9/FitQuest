@@ -14,7 +14,8 @@ class User(
     private var level: Int = 1,
     private var xp: Int = 0,
     private var points: Int = 0,
-    private var achievements: List<String> = listOf()
+    private var achievements: List<String> = listOf(),
+    private var steps: Int = 0,
 ) {
     fun getId() = id
     fun getName() = name
@@ -29,7 +30,18 @@ class User(
         this.picture = picture
     }
     fun getLevel() = level
+
     fun getXp() = xp
+
+    fun getSteps() = steps
+
+    fun setSteps(steps: Int) {
+        this.steps = steps
+    }
+
+    fun resetSteps() {
+        this.steps = 0
+    }
     fun setXp(xp: Int) {
         this.xp = xp
     }
@@ -84,6 +96,10 @@ class User(
             return true
         }
         return false
+    }
+
+    fun addSteps(steps: Int) {
+        this.steps += steps
     }
 
 

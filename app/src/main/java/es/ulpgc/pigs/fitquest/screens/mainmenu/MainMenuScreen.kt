@@ -103,7 +103,7 @@ fun StepCounterScreen(context: Context, user: User?) {
         Text(text = "NO LO DETECTA")
         return
     } else {
-        Toast.makeText(context, "LO DETECTA", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(context, "LO DETECTA", Toast.LENGTH_SHORT).show()
         val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
         val sensor1 = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
@@ -142,6 +142,7 @@ fun StepCounterScreen(context: Context, user: User?) {
                 .size(320.dp)
                 .padding(20.dp),
             strokeWidth = 20.dp,
+            trackColor = Color.Gray,
             color = Color(android.graphics.Color.parseColor("#00FF00"))
         )
         Text(text = "Steps: $steps")

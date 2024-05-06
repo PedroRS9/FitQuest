@@ -1,13 +1,19 @@
 package es.ulpgc.pigs.fitquest.screens.mainmenu
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,22 +36,35 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import es.ulpgc.pigs.fitquest.R
+import es.ulpgc.pigs.fitquest.components.GradientCircularProgressIndicator
 import es.ulpgc.pigs.fitquest.data.User
+import es.ulpgc.pigs.fitquest.extensions.fitquestHomeBackground
+import es.ulpgc.pigs.fitquest.extensions.fitquestLoginBackground
 import es.ulpgc.pigs.fitquest.global.UserGlobalConf
 import es.ulpgc.pigs.fitquest.navigation.AppScreens
 import es.ulpgc.pigs.fitquest.navigation.BottomNavigationBar
 import es.ulpgc.pigs.fitquest.navigation.TopNavigationBar
 import es.ulpgc.pigs.fitquest.ui.theme.FitquestTheme
+import es.ulpgc.pigs.fitquest.ui.theme.LightGrey
+import java.time.format.TextStyle
 
 @ExperimentalMaterial3Api
 @Composable
@@ -71,7 +90,7 @@ fun MainMenuScreen(navController: NavController, backStackEntry: NavBackStackEnt
 
     Scaffold(
         topBar = { TopNavigationBar(navController = navController, title = stringResource(R.string.topbar_mainmenu_title)) },
-        bottomBar = { BottomNavigationBar(navController) }
+        bottomBar = { BottomNavigationBar(navController) },
     ) { paddingValues ->
         StepCounterScreen(stepState = stepState,
             user = user,
@@ -105,43 +124,109 @@ fun StepCounterScreen(
             return
         }
         Box(modifier = Modifier
-            .size(360.dp)
-            .padding(20.dp)
+            .fillMaxSize()
+            .padding(top = 50.dp)
+            .fitquestHomeBackground(),
         ) {
             val stepsFloat = stepState.value?.toFloat()
             val stepGoal = user?.getStepGoal()?.toFloat()
+            val gradientBrush = Brush.radialGradient(
+                colors = listOf(Color.Red, Color.Yellow), // Lista de colores del gradiente
+                center = Offset(100f, 100f), // Centro del gradiente (opcional)
+                radius = 200f // Radio del gradiente (opcional)
+            )
 
-            CircularProgressIndicator(
+            GradientCircularProgressIndicator(
                 progress = stepsFloat?.div(stepGoal ?: 1f) ?: 0f,
                 modifier = Modifier
                     .size(320.dp)
-                    .padding(50.dp),
-                strokeWidth = 20.dp,
-                trackColor = Color.Gray,
-                color = Color(android.graphics.Color.parseColor("#00FF00"))
+                    .align(Alignment.TopCenter),
+                strokeWidth = 35f,
+                trackColor = Color.LightGray,
+                colors = listOf(
+                    Color(0xFFFF0000), // Rojo
+                    Color(0xFFFF5722), // Naranja Rojizo
+                    Color(0xFFFFC107), // Ámbar
+                    Color(0xFFFFEB3B), // Amarillo
+                    Color(0xFFCDDC39), // Lima
+                    Color(0xFF8BC34A),  // Verde claro
+                    Color(0xFF4CAF50)  // Verde
+                )
             )
             Text(
-                text = "Steps: ${stepState.value}",
+                text = "GOAL ${user?.getStepGoal()}",
                 modifier = Modifier.align(Alignment.Center)
+                    .offset(y = (-220).dp),
+                style = androidx.compose.ui.text.TextStyle(
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Italic,
+                    color = Color(android.graphics.Color.parseColor("#00FF00"))
+                )
             )
             Text(
-                text = "Goal: ${user?.getStepGoal()} steps",
-                modifier = Modifier.align(Alignment.BottomCenter)
+                //text = "${stepState.value}",
+                text = "25899",
+                modifier = Modifier.align(Alignment.Center)
+                    .offset(y = (-150).dp),
+                style = androidx.compose.ui.text.TextStyle(
+                    fontSize = 72.sp,
+                    fontStyle = FontStyle.Italic,
+                    fontWeight = FontWeight.Bold
+                )
             )
-        }
 
+            Text(
+                text = "STEPS",
+                modifier = Modifier.align(Alignment.Center)
+                    .offset(y = (-80).dp),
+                style = androidx.compose.ui.text.TextStyle(
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Italic,
+                    color = Color.LightGray
+                )
+            )
+            /*
         Button(
             onClick = { stepReset() },
             modifier = Modifier.padding(10.dp)
         ) {
             Text("Reset Steps")
         }
-        Button(
-            onClick = { requestStepGoalChange() },
-            modifier = Modifier.padding(10.dp)
-        ) {
-            Text("Set new goal")
+         */
+            Button(
+                onClick = { requestStepGoalChange() },
+                modifier = Modifier.padding(10.dp)
+                    .align(Alignment.Center)
+                    .offset(y = (80).dp)
+            ) {
+                Text("Set new goal")
+            }
+
+            Box(
+                modifier = Modifier
+                    .width(320.dp)
+                    .height(160.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(Color(android.graphics.Color.parseColor("#DEDEDE")))
+                    .align(Alignment.BottomCenter)
+                    .offset(y = (-20).dp)
+                    .padding(bottom = 30.dp)
+
+            ) {
+                Text(
+                    text = "WEIGHT",
+                    color = Color.Black,
+                    fontSize = 25.sp,
+                    modifier = Modifier.padding(30.dp)
+
+                    )
+            }
+
         }
+
+
     }
 }
 

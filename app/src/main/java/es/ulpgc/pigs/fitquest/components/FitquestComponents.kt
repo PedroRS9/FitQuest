@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -61,8 +62,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -115,6 +122,49 @@ fun FitquestTransparentButton(
         )
     }
 }
+
+@Composable
+fun GradientCircularProgressIndicator(
+    progress: Float,
+    modifier: Modifier = Modifier,
+    colors: List<Color>,
+    trackColor: Color,
+    strokeWidth: Float = 8f
+) {
+    Canvas(modifier = modifier.size(100.dp)) {
+        val diameter = size.minDimension
+        val radius = diameter / 2
+        val top = (size.height - diameter) / 2
+        val startAngle = -90f
+        val sweepAngle = 360 * progress
+
+        val gradient = Brush.sweepGradient(
+            colors = colors,
+            center = Offset(radius, radius)
+        )
+
+        drawArc(
+            color = trackColor,
+            startAngle = startAngle,
+            sweepAngle = 360f,
+            useCenter = false,
+            topLeft = Offset(top, top),
+            size = Size(diameter, diameter),
+            style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+        )
+
+        drawArc(
+            brush = gradient,
+            startAngle = startAngle,
+            sweepAngle = sweepAngle,
+            useCenter = false,
+            topLeft = Offset(top, top),
+            size = Size(diameter, diameter),
+            style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+        )
+    }
+}
+
 
 @Composable
 fun FitquestSocialMediaIcons() {

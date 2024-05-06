@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -213,16 +214,40 @@ fun StepCounterScreen(
                     .align(Alignment.BottomCenter)
                     .offset(y = (-20).dp)
                     .padding(bottom = 30.dp)
-
             ) {
-                Text(
-                    text = "WEIGHT",
-                    color = Color.Black,
-                    fontSize = 25.sp,
-                    modifier = Modifier.padding(30.dp)
-
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "WEIGHT",
+                        color = Color.Black,
+                        fontSize = 25.sp,
+                        modifier = Modifier.padding(bottom = 10.dp).padding(top = 18.dp)
                     )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Button(
+                            onClick = { /* Manejar clic del botón */ },
+                            modifier = Modifier.width(80.dp) // Hace que el botón ocupe el ancho disponible
+                        ) {
+                            Text("Add")
+                        }
+
+                        Text(
+                            text = "75.4 Kg",
+                            color = Color.Black,
+                            fontSize = 28.sp,
+                            modifier = Modifier.padding(start = 100.dp),
+                            style = androidx.compose.ui.text.TextStyle(
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+                }
             }
+
 
         }
 

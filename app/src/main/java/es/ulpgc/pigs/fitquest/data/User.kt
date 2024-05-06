@@ -16,6 +16,7 @@ class User(
     private var points: Int = 0,
     private var achievements: List<String> = listOf(),
     private var steps: Int = 0,
+    private var stepGoal: Int = 0
 ) {
     fun getId() = id
     fun getName() = name
@@ -42,6 +43,12 @@ class User(
     fun resetSteps() {
         this.steps = 0
     }
+
+    fun getStepGoal() = stepGoal
+    fun setStepGoal(stepGoal: Int) {
+        this.stepGoal = stepGoal
+    }
+
     fun setXp(xp: Int) {
         this.xp = xp
     }

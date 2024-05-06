@@ -81,6 +81,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import es.ulpgc.pigs.fitquest.R
 import es.ulpgc.pigs.fitquest.data.Message
 import es.ulpgc.pigs.fitquest.ui.theme.DarkGreen
@@ -632,5 +633,25 @@ fun UserItemList(profilePicture: Painter, username: String, onClick: () -> Unit)
         )
         Spacer(modifier = Modifier.width(10.dp))
         Text(text = username, fontSize = 30.sp,  color= Color.White)
+    }
+}
+
+@Composable
+fun AchievementDialog(onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        // Fondo oscurecido
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Surface(
+                modifier = Modifier.padding(32.dp),
+                color = Color(0xAA000000)
+            ) {
+                Box(
+                    modifier = Modifier.padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("¡Logro desbloqueado! Entraste a la aplicación.", color = Color.White)
+                }
+            }
+        }
     }
 }

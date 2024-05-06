@@ -113,7 +113,9 @@ class FirebaseUserRepository : UserRepository {
             level = document.getLong("level")?.toInt() ?: 1,
             xp = document.getLong("xp")?.toInt() ?: 0,
             points = document.getLong("points")?.toInt() ?: 0,
-            achievements = document.get("achievements") as? List<String> ?: listOf()
+            achievements = document.get("achievements") as? List<String> ?: listOf(),
+            steps = document.getLong("steps")?.toInt() ?: 0,
+            stepGoal = document.getLong("stepGoal")?.toInt() ?: 0
         )
     }
 
@@ -126,7 +128,9 @@ class FirebaseUserRepository : UserRepository {
             "level" to user.getLevel(),
             "xp" to user.getXp(),
             "points" to user.getPoints(),
-            "achievements" to user.getAchievements()
+            "achievements" to user.getAchievements(),
+            "steps" to user.getSteps(),
+            "stepGoal" to user.getStepGoal()
         )
     }
 

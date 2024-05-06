@@ -9,6 +9,7 @@ import android.hardware.SensorManager
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -118,7 +119,7 @@ fun StepCounterScreen(context: Context, user: User?) {
 
                         // Aumentar la experiencia del usuario por cada paso
                         user?.addXp(1)
-                        Toast.makeText(context, "Experiencia del usuario: ${user?.getXp()}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Pasos: ${newSteps}", Toast.LENGTH_SHORT).show()
 
                     }
                 }
@@ -136,16 +137,29 @@ fun StepCounterScreen(context: Context, user: User?) {
             Color(android.graphics.Color.parseColor("#00FF00")), // Color inicial (lima)
             Color(android.graphics.Color.parseColor("#006400"))  // Color final (verde oscuro)
         )
-        CircularProgressIndicator(
-            progress = steps.toFloat() / 1000f,
-            modifier = Modifier
-                .size(320.dp)
-                .padding(20.dp),
-            strokeWidth = 20.dp,
-            trackColor = Color.Gray,
-            color = Color(android.graphics.Color.parseColor("#00FF00"))
-        )
-        Text(text = "Steps: $steps")
+        Box(modifier = Modifier
+            .size(360.dp)
+            .padding(20.dp)
+        ) {
+            CircularProgressIndicator(
+                progress = steps.toFloat() / 100000f,
+                modifier = Modifier
+                    .size(320.dp)
+                    .padding(50.dp),
+                strokeWidth = 20.dp,
+                trackColor = Color.Gray,
+                color = Color(android.graphics.Color.parseColor("#00FF00"))
+            )
+            Text(
+                text = "Steps: $steps",
+                modifier = Modifier.align(Alignment.Center)
+            )
+            Text(
+                text = "Goal: 100000",
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
+        }
+
 
         ResetButton {
             steps = 0

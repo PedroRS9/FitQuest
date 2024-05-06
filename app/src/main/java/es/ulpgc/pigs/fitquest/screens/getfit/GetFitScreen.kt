@@ -113,16 +113,6 @@ fun GetFitBodyContent(navController: NavController, paddingValues: PaddingValues
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold
         )
-        val showDialog = remember { mutableStateOf(false) }
-        // Simular desbloqueo de logro
-        Button(onClick = { showDialog.value = true }) {
-            Text("Desbloquear logro")
-        }
-        if(showDialog.value){
-            AchievementDialog {
-                showDialog.value = false
-            }
-        }
     }
 }
 

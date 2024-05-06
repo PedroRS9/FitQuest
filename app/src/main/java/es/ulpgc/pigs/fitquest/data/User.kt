@@ -58,6 +58,9 @@ class User(
     fun setPoints(points: Int){
         this.points = points
     }
+    fun addPoints(points: Int){
+        this.points += points
+    }
 
     fun getAchievements(): List<String> = achievements
     fun addAchievement(achievementId: String) {

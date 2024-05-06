@@ -39,13 +39,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
 import es.ulpgc.pigs.fitquest.R
+import es.ulpgc.pigs.fitquest.components.AchievementDialog
 import es.ulpgc.pigs.fitquest.data.User
 import es.ulpgc.pigs.fitquest.global.UserGlobalConf
 import es.ulpgc.pigs.fitquest.navigation.AppScreens
 import es.ulpgc.pigs.fitquest.navigation.BottomNavigationBar
 import es.ulpgc.pigs.fitquest.navigation.TopNavigationBar
 import es.ulpgc.pigs.fitquest.ui.theme.FitquestTheme
+import es.ulpgc.pigs.fitquest.data.Result
+import es.ulpgc.pigs.fitquest.extensions.playSound
 
 @ExperimentalMaterial3Api
 @Composable
@@ -56,6 +60,8 @@ fun MainMenuScreen(navController: NavController, backStackEntry: NavBackStackEnt
     viewModel.setUserGlobalConf(userGlobalConf)
     val context = LocalContext.current
     LaunchedEffect(user){
+        viewModel.setUser(user!!)
+        viewModel.checkEnteredApplicationAchievement()
         viewModel.initSensor(context)
         viewModel.checkStepGoal(user!!)
     }
@@ -68,6 +74,7 @@ fun MainMenuScreen(navController: NavController, backStackEntry: NavBackStackEnt
 
     val stepState = viewModel.steps.observeAsState(0)
     val stepDialogState = viewModel.showStepGoalDialog.observeAsState(false)
+    val achievementState = viewModel.achievementState.observeAsState(null)
 
     Scaffold(
         topBar = { TopNavigationBar(navController = navController, title = stringResource(R.string.topbar_mainmenu_title)) },
@@ -79,6 +86,8 @@ fun MainMenuScreen(navController: NavController, backStackEntry: NavBackStackEnt
             setStepGoal = { user, stepGoal -> viewModel.setStepGoal(user, stepGoal) },
             requestStepGoalChange = { viewModel.requestStepGoalChange() },
             stepReset = { viewModel.resetSteps() },
+            achievementState = achievementState,
+            clearAchievementState = { viewModel.clearAchievementState() },
             paddingValues = paddingValues)
     }
 }
@@ -88,10 +97,12 @@ fun StepCounterScreen(
     stepState: State<Int>,
     user: User?,
     stepDialogState: State<Boolean>,
+    achievementState: State<Result?>,
     setStepGoal: (User, Int) -> Unit,
     requestStepGoalChange: () -> Unit,
     stepReset: () -> Unit,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    clearAchievementState: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -104,6 +115,17 @@ fun StepCounterScreen(
             SetStepGoalDialog(user = user!!, onConfirm = setStepGoal)
             return
         }
+        if(achievementState.value != null && achievementState.value is Result.AchievementSuccess){
+            clearAchievementState()
+            val achievement = (achievementState.value as Result.AchievementSuccess).achievements[0]
+            AchievementDialog(achievementImage = rememberAsyncImagePainter(model = achievement.image),
+                title = achievement.title,
+                description = achievement.description,
+                onDismiss = { }
+            )
+            playSound(LocalContext.current, R.raw.achievement_win_fanfare)
+        }
+
         Box(modifier = Modifier
             .size(360.dp)
             .padding(20.dp)
@@ -208,6 +230,7 @@ fun ConfirmLogoutDialog(showDialog: MutableState<Boolean>, navController: NavCon
 fun ShowPreview() {
     val stepState = remember { mutableIntStateOf(500) }
     val stepDialogState = remember { mutableStateOf(false) }
+    val achievementState = remember { mutableStateOf<Result?>(null) }
     FitquestTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -220,11 +243,13 @@ fun ShowPreview() {
                 StepCounterScreen(
                     stepState = stepState,
                     user = User(name="Paquito", password="", email="", isDoctor=false, steps=500, stepGoal=1000),
-                    paddingValues = paddingValues,
                     stepDialogState = stepDialogState,
-                    stepReset = { },
+                    achievementState = achievementState,
                     setStepGoal = { user, stepGoal -> },
-                    requestStepGoalChange = { }
+                    requestStepGoalChange = { },
+                    stepReset = { },
+                    paddingValues = paddingValues,
+                    clearAchievementState = { }
                 )
             }
         }

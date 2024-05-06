@@ -36,6 +36,7 @@ import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
@@ -637,21 +638,48 @@ fun UserItemList(profilePicture: Painter, username: String, onClick: () -> Unit)
 }
 
 @Composable
-fun AchievementDialog(onDismiss: () -> Unit) {
+fun AchievementDialog(achievementImage: Painter, title: String, description: String, onDismiss: () -> Unit) {
     Dialog(onDismissRequest = onDismiss) {
-        // Fondo oscurecido
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Surface(
-                modifier = Modifier.padding(32.dp),
-                color = Color(0xAA000000)
+                modifier = Modifier
+                    .padding(32.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                color = Color(0xFF000000)
             ) {
-                Box(
+                Column(
                     modifier = Modifier.padding(16.dp),
-                    contentAlignment = Alignment.Center
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("¡Logro desbloqueado! Entraste a la aplicación.", color = Color.White)
+                    Image(
+                        painter = achievementImage,
+                        contentDescription = "Achievement Icon",
+                        modifier = Modifier.size(80.dp)
+                    )
+                    Text(
+                        text = title,
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                    Text(
+                        text = description,
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
+                    )
+                    FitquestButton(
+                        onClick = onDismiss,
+                        text = "OK",
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
                 }
             }
         }
     }
 }
+
+

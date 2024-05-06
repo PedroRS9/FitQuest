@@ -35,6 +35,25 @@ class FirebaseAchievementRepository : AchievementRepository {
         }
     }
 
+    override suspend fun getAchievement(id: String, callback: (Achievement) -> Unit) {
+        try {
+            val doc = database.collection("achievements").document(id).get().await()
+            if (!doc.exists()) {
+                throw IllegalStateException("El logro con ID $id no existe.")
+            }
+            val title = doc.getString("title") ?: throw IllegalStateException("Falta el título en el logro $id")
+            val description = doc.getString("description") ?: throw IllegalStateException("Falta la descripción en el logro $id")
+            val pictureURL = doc.getString("pictureURL") ?: throw IllegalStateException("Falta el URL de imagen en el logro $id")
+            val category = doc.getString("category") ?: throw IllegalStateException("Falta la categoría en el logro $id")
+            val imageRef = storageReference.child(pictureURL)
+            val ONE_MEGABYTE: Long = 1024 * 1024
+            val bytes = imageRef.getBytes(ONE_MEGABYTE).await()
+            callback(Achievement(id = doc.id, title = title, description = description, category = category, image = bytes))
+        } catch (e: Exception) {
+            println("Error al obtener logro: ${e.message}")
+            throw e // Re-lanza la excepción para manejarla más arriba si es necesario
+        }
+    }
     override suspend fun getUserAchievements(user: User, callback: (List<Achievement>) -> Unit) = coroutineScope {
         val achievementIds = user.getAchievements()
         val achievementFetchJobs = achievementIds.map { achievementId ->

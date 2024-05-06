@@ -36,6 +36,9 @@ class MainMenuViewModel() : ViewModel() {
     private val _achievementState = MutableLiveData<Result>()
     val achievementState: LiveData<Result> = _achievementState
 
+    private val _playSoundState = MutableLiveData(false)
+    val playSoundState: LiveData<Boolean> = _playSoundState
+
     private var initialSteps = -1
     private lateinit var user: User
 
@@ -64,6 +67,7 @@ class MainMenuViewModel() : ViewModel() {
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
                             achievementRepository.getAchievement(FirstGoalCompletedAchievementId){ achievement ->
+                                _playSoundState.postValue(true)
                                 _achievementState.postValue(Result.AchievementSuccess(listOf(achievement)))
                             }
                         } catch (e: Exception) {
@@ -120,6 +124,7 @@ class MainMenuViewModel() : ViewModel() {
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
                             achievementRepository.getAchievement(EnteredApplicationAchievementId){ achievement ->
+                                _playSoundState.postValue(true)
                                 _achievementState.postValue(Result.AchievementSuccess(listOf(achievement)))
                             }
                         } catch (e: Exception) {
@@ -133,5 +138,9 @@ class MainMenuViewModel() : ViewModel() {
 
     fun clearAchievementState(){
         _achievementState.value = null
+    }
+
+    fun clearPlaySoundState() {
+        _playSoundState.value = false
     }
 }

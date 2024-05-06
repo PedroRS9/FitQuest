@@ -27,6 +27,7 @@ import es.ulpgc.pigs.fitquest.extensions.fitquestBackground
 import es.ulpgc.pigs.fitquest.global.UserGlobalConf
 import es.ulpgc.pigs.fitquest.navigation.BottomNavigationBar
 import es.ulpgc.pigs.fitquest.navigation.TopNavigationBar
+import es.ulpgc.pigs.fitquest.ui.theme.FitquestGradientTop
 
 @ExperimentalMaterial3Api
 @Composable
@@ -53,7 +54,7 @@ fun GetFitBodyContent(navController: NavController, paddingValues: PaddingValues
         Canvas(modifier = Modifier
             .fillMaxWidth()
             .size(200.dp)) {
-            drawRect(color = Color.Blue)
+            drawRect(color = FitquestGradientTop)
         }
         // we create a black background with a white text
         Box(contentAlignment = Alignment.Center){
@@ -100,7 +101,7 @@ fun GetFitBodyContent(navController: NavController, paddingValues: PaddingValues
                         .width(190.dp)
                         .size(rectangleHeight)
                     ){
-                        drawRect(color = Color.Cyan)
+                        drawRect(color = FitquestGradientTop)
                     }
                 }
             }

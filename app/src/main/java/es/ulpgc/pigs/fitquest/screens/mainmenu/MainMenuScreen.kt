@@ -2,7 +2,6 @@ package es.ulpgc.pigs.fitquest.screens.mainmenu
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -41,10 +39,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,7 +56,6 @@ import es.ulpgc.pigs.fitquest.components.AchievementDialog
 import es.ulpgc.pigs.fitquest.components.GradientCircularProgressIndicator
 import es.ulpgc.pigs.fitquest.data.User
 import es.ulpgc.pigs.fitquest.extensions.fitquestHomeBackground
-import es.ulpgc.pigs.fitquest.extensions.fitquestLoginBackground
 import es.ulpgc.pigs.fitquest.global.UserGlobalConf
 import es.ulpgc.pigs.fitquest.navigation.AppScreens
 import es.ulpgc.pigs.fitquest.navigation.BottomNavigationBar
@@ -68,8 +63,6 @@ import es.ulpgc.pigs.fitquest.navigation.TopNavigationBar
 import es.ulpgc.pigs.fitquest.ui.theme.FitquestTheme
 import es.ulpgc.pigs.fitquest.data.Result
 import es.ulpgc.pigs.fitquest.extensions.playSound
-import es.ulpgc.pigs.fitquest.ui.theme.LightGrey
-import java.time.format.TextStyle
 
 @ExperimentalMaterial3Api
 @Composable
@@ -95,6 +88,7 @@ fun MainMenuScreen(navController: NavController, backStackEntry: NavBackStackEnt
     val stepState = viewModel.steps.observeAsState(0)
     val stepDialogState = viewModel.showStepGoalDialog.observeAsState(false)
     val achievementState = viewModel.achievementState.observeAsState(null)
+    val playSoundState = viewModel.playSoundState.observeAsState(false)
 
     Scaffold(
         topBar = { TopNavigationBar(navController = navController, title = stringResource(R.string.topbar_mainmenu_title)) },
@@ -107,7 +101,9 @@ fun MainMenuScreen(navController: NavController, backStackEntry: NavBackStackEnt
             requestStepGoalChange = { viewModel.requestStepGoalChange() },
             stepReset = { viewModel.resetSteps() },
             achievementState = achievementState,
+            playSoundState = playSoundState,
             clearAchievementState = { viewModel.clearAchievementState() },
+            clearPlaySoundState = { viewModel.clearPlaySoundState() },
             paddingValues = paddingValues)
     }
 }
@@ -122,7 +118,9 @@ fun StepCounterScreen(
     requestStepGoalChange: () -> Unit,
     stepReset: () -> Unit,
     paddingValues: PaddingValues,
-    clearAchievementState: () -> Unit
+    clearAchievementState: () -> Unit,
+    playSoundState: State<Boolean>,
+    clearPlaySoundState: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -136,14 +134,16 @@ fun StepCounterScreen(
             return
         }
         if(achievementState.value != null && achievementState.value is Result.AchievementSuccess){
-            clearAchievementState()
+            if(playSoundState.value){
+                playSound(LocalContext.current, R.raw.achievement_win_fanfare)
+                clearPlaySoundState()
+            }
             val achievement = (achievementState.value as Result.AchievementSuccess).achievements[0]
             AchievementDialog(achievementImage = rememberAsyncImagePainter(model = achievement.image),
                 title = achievement.title,
                 description = achievement.description,
-                onDismiss = { }
+                onDismiss = { clearAchievementState() },
             )
-            playSound(LocalContext.current, R.raw.achievement_win_fanfare)
         }
 
         Box(modifier = Modifier
@@ -188,8 +188,7 @@ fun StepCounterScreen(
                 )
             )
             Text(
-                //text = "${stepState.value}",
-                text = "25899",
+                text = "${stepState.value}",
                 modifier = Modifier.align(Alignment.Center)
                     .offset(y = (-150).dp),
                 style = androidx.compose.ui.text.TextStyle(
@@ -359,7 +358,9 @@ fun ShowPreview() {
                     requestStepGoalChange = { },
                     stepReset = { },
                     paddingValues = paddingValues,
-                    clearAchievementState = { }
+                    clearAchievementState = { },
+                    playSoundState = remember { mutableStateOf(false) },
+                    clearPlaySoundState = { }
                 )
             }
         }

@@ -61,7 +61,7 @@ fun Splash() {
             painter = painterResource(id = R.drawable.fitquest_logo),
             contentDescription = "FitQuest Logo")
             Modifier.size(150.dp, 150.dp)
-        Text("Welcome!",
+        Text("FitQuest",
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
             color = Color.DarkGray

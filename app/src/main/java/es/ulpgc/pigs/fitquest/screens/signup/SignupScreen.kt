@@ -162,6 +162,7 @@ fun BodyContent(navController: NavController,
             },
             text = stringResource(R.string.button_signup),
             modifier = Modifier.padding(20.dp),
+            whiteBorder = true
         )
         if(showDialog.value){
             ErrorDialog(

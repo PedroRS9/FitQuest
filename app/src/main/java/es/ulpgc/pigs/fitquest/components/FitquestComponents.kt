@@ -264,12 +264,13 @@ fun ErrorDialog(
 fun FitquestButton(
     onClick: () -> Unit,
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    whiteBorder: Boolean = false
 ){
     OutlinedButton(
         onClick = onClick,
         modifier = modifier,
-        border = BorderStroke(2.dp, Color.White),
+        border = if(whiteBorder) BorderStroke(2.dp, Color.White) else null,
         shape = RoundedCornerShape(50),
         colors = ButtonDefaults.buttonColors(containerColor = DarkGreen)
     ) {

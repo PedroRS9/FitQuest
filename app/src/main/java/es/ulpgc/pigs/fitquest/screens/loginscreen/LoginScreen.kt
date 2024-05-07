@@ -139,7 +139,8 @@ fun BodyContent(navController: NavController,
         )
         FitquestButton(
             onClick = { onLogin(username, password) },
-            text = stringResource(R.string.button_signin)
+            text = stringResource(R.string.button_signin),
+            whiteBorder = true
         )
         FitquestClickableText(
             text = stringResource(R.string.forgot_password_text),
@@ -161,6 +162,7 @@ fun BodyContent(navController: NavController,
             FitquestButton(
                 onClick = { navController.navigate(route = AppScreens.SignupScreen.route) },
                 text = stringResource(R.string.button_signup),
+                whiteBorder = true
             )
         }
 

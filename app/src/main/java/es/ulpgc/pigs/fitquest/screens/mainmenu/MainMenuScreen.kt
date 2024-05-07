@@ -53,6 +53,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import es.ulpgc.pigs.fitquest.R
 import es.ulpgc.pigs.fitquest.components.AchievementDialog
+import es.ulpgc.pigs.fitquest.components.FitquestButton
 import es.ulpgc.pigs.fitquest.components.GradientCircularProgressIndicator
 import es.ulpgc.pigs.fitquest.data.User
 import es.ulpgc.pigs.fitquest.extensions.fitquestHomeBackground
@@ -217,14 +218,13 @@ fun StepCounterScreen(
             Text("Reset Steps")
         }
          */
-            Button(
+            FitquestButton(
                 onClick = { requestStepGoalChange() },
                 modifier = Modifier.padding(10.dp)
                     .align(Alignment.Center)
-                    .offset(y = (80).dp)
-            ) {
-                Text("Set new goal")
-            }
+                    .offset(y = (80).dp),
+                text = "Set new goal"
+            )
 
             Box(
                 modifier = Modifier
@@ -249,12 +249,11 @@ fun StepCounterScreen(
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Button(
+                        FitquestButton(
                             onClick = { /* Manejar clic del botón */ },
-                            modifier = Modifier.width(80.dp) // Hace que el botón ocupe el ancho disponible
-                        ) {
-                            Text("Add")
-                        }
+                            modifier = Modifier.width(80.dp), // Hace que el botón ocupe el ancho disponible,
+                            text = "Add"
+                        )
 
                         Text(
                             text = "75.4 Kg",
